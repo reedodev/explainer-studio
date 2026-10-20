@@ -10,6 +10,7 @@ import { clamp01, registerFonts, type Cnv, type Pt } from "./core.js";
 import { getStyle, resolveStyleId, type StyleDef } from "./styles/index.js";
 import { layoutText, styledIcon } from "./styles/shared.js";
 import type { Env, Role, TextLayout, Token } from "./styles/types.js";
+import { applyCamera, cameraAt } from "./camera.js";
 import { boardBackground, drawBackdrop, drawHand, gridPanel, handPose, karaokeSubtitle, paperNote, photoCard, tipOf, type BoardFx, type CaptionTiming } from "./fx.js";
 
 registerFonts();
@@ -169,6 +170,37 @@ function drawElement(style: StyleDef, c: any, e: any, p: number, env: Env, dir: 
   }
 }
 
+/**
+ * Life after drawing (deterministic, opt out with storyboard.fx.idle=false or element.idle=false):
+ * icons bob a few px, highlights breathe ~2%, arrows nudge along their direction. The motion fades
+ * in over 0.6 s after an element finishes drawing. Returns true when a save() needs a restore().
+ */
+function idleTransform(style: StyleDef, c: any, e: any, since: number, i: number, all: any[]): boolean {
+  if (since <= 0) return false;
+  const ramp = Math.min(1, since / 0.6), ph = i * 1.7, T = since;
+  if (e.type === "icon") {
+    c.save();
+    c.translate(0, -Math.sin((2 * Math.PI * T) / 2.6 + ph) * 5 * ramp);
+    return true;
+  }
+  if (e.type === "highlight") {
+    const b = highlightBox(style, c, e, all);
+    if (!b) return false;
+    const k = 1 + 0.022 * Math.sin((2 * Math.PI * T) / 2.2 + ph) * ramp, cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+    c.save();
+    c.translate(cx, cy); c.scale(k, k); c.translate(-cx, -cy);
+    return true;
+  }
+  if (e.type === "arrow" && e.from && e.to) {
+    const dx = e.to[0] - e.from[0], dy = e.to[1] - e.from[1], len = Math.hypot(dx, dy) || 1;
+    const d = Math.sin((2 * Math.PI * T) / 1.8 + ph) * 4 * ramp;
+    c.save();
+    c.translate((dx / len) * d, (dy / len) * d);
+    return true;
+  }
+  return false;
+}
+
 export interface FrameOpts {
   style?: string | StyleDef;
   /** Final frame of the previous scene, for the style's scene-in transition. */
@@ -217,20 +249,28 @@ export function frame(board: any, scene: any, t: number, dir: string, subtitle =
     if (im) drawBackdrop(c, im, env, scene.backdrop);
   }
   const n = scene.drawOrder.length;
+  // board layer: elements (and the optional pencil hand) move with the camera; background,
+  // style overlays (post), transitions and subtitles stay fixed
+  c.save();
+  applyCamera(c, cameraAt(board, scene, style.id, t));
+  const idleOn = board.fx?.idle !== false;
   scene.drawOrder.forEach((id: string, i: number) => {
     const e = scene.elements.find((q: any) => q.id === id);
     if (!e) return;
     const start = e.start ?? (i * scene.duration) / n, end = e.end ?? ((i + 1) * scene.duration) / n;
     const p = clamp01((t - start) / Math.max(0.1, end - start));
     if (p <= 0) return;
+    const moved = idleOn && e.idle !== false && p >= 1 && idleTransform(style, c, e, t - end, i, scene.elements);
     drawElement(style, c, e, p, env, dir, i);
+    if (moved) c.restore();
   });
-  style.post?.(c, env, cv);
   if (fx?.hand) {
     const handImg = images.get(path.join(dir, fx.hand.src));
     const pose = handImg && handPose(scene, t, (e, p) => tipOf(e, p, scene.elements, (q, label) => textLayoutFor(style, c, q, scene.elements, label)));
     if (handImg && pose) drawHand(c, handImg, fx.hand, pose.tip, pose.alpha, t);
   }
+  c.restore();
+  style.post?.(c, env, cv);
   if (opts.prev && style.transition && t < style.transition.dur) style.transition.draw(c, opts.prev, clamp01(t / style.transition.dur), env);
   if (subtitle) {
     if (fx?.karaoke) karaokeSubtitle(c, subtitle, env, fx.karaoke, opts.caption);

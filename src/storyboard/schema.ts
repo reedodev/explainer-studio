@@ -13,6 +13,8 @@ const Color = z.enum(PALETTE_NAMES as [string, ...string[]]);
 const Point = z.tuple([z.number(), z.number()]);
 
 const Base = z.object({
+  /** false = no idle motion (bob / breathe / nudge) after this element is drawn. */
+  idle: z.boolean().optional(),
   parent: z.string().optional(),
   container: z.string().optional(),
   align: z.enum(['left', 'center', 'right']).optional(),
@@ -144,6 +146,8 @@ export const Scene = z.object({
   layout: z.string().default("free"),
   /** Optional per-scene style override (e.g. a spy-titles opening in a whiteboard video). Used only when rendering the main style. */
   style: z.string().optional(),
+  /** Camera for this scene: push (default) | pan-left | pan-right | still. Board layer only. */
+  camera: z.enum(["push", "pan-left", "pan-right", "still"]).optional(),
   /** Full-frame photo behind this scene's elements (cover fit, slow push-in). */
   backdrop: z.object({ src: z.string(), zoom: z.tuple([z.number(), z.number()]).optional(), focus: z.tuple([z.number(), z.number()]).optional(), dim: z.number().min(0).max(1).optional() }).optional(),
   elements: z.array(Element).min(1),
@@ -169,6 +173,10 @@ export const Storyboard = z.object({
   /** Visual style id (see styles/README.md). The same storyboard renders in any style. */
   style: z.string().optional(),
   stickers: z.array(StickerSpec).default([]),
+  /** Default camera for every scene (scene.camera wins). Styles swiss-motion and ascii-crt default to still. */
+  camera: z.enum(["push", "pan-left", "pan-right", "still"]).optional(),
+  /** Share of each scene by which all elements are drawn (default 0.65). */
+  drawBy: z.number().min(0.3).max(0.97).optional(),
   /** Optional bottom-subtitle font size in px for band subtitles (style default, usually 38, when absent). */
   subtitleSize: z.number().min(28).max(56).optional(),
   /** Optional board effects for the main style: off-white board, pencil hand following the stroke, karaoke subtitles. */
@@ -181,6 +189,9 @@ export const Storyboard = z.object({
       karaoke: z.object({ color: z.string().optional(), size: z.number().min(28).optional(), family: z.string().optional(), band: z.string().optional(), ink: z.string().optional() }).optional(),
       /** true = element start/end were set from measured audio by a project tool; `es tts/validate/render` keep them. */
       manualTiming: z.boolean().optional(),
+      /** false = no idle motion after drawing; camera false = no camera moves at all. */
+      idle: z.boolean().optional(),
+      camera: z.boolean().optional(),
     })
     .optional(),
   scenes: z.array(Scene).min(1),

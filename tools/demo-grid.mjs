@@ -2,7 +2,7 @@
 /**
  * demo-grid.mjs - put the same storyboard rendered in all 8 styles side by side.
  *
- *   node tools/demo-grid.mjs <projectDir> <out.mp4> [--gif out.gif] [--gif-width 1200] [--gif-seconds 16]
+ *   node tools/demo-grid.mjs <projectDir> <out.mp4> [--gif out.gif] [--gif-width 1200] [--gif-seconds 16] [--gif-start 0]
  *
  * Expects <projectDir>/final.mp4 (main style) and <projectDir>/variants/<style>/final.mp4,
  * i.e. run `npm run es -- render <projectDir> --style <id>` for each style first.
@@ -37,6 +37,7 @@ console.log('grid: ' + out + ` (${(fs.statSync(out).size / 1048576).toFixed(1)} 
 const gif = opt('--gif');
 if (gif) {
   const w = Number(opt('--gif-width', '1200')), sec = Number(opt('--gif-seconds', '16')), fps = Number(opt('--gif-fps', '10'));
-  ff(['-t', String(sec), '-i', out, '-vf', `fps=${fps},scale=${w}:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle`, '-loop', '0', gif]);
+  const ss = Number(opt('--gif-start', '0'));
+  ff(['-ss', String(ss), '-t', String(sec), '-i', out, '-vf', `fps=${fps},scale=${w}:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle`, '-loop', '0', gif]);
   console.log('gif: ' + gif + ` (${(fs.statSync(gif).size / 1048576).toFixed(1)} MB)`);
 }
