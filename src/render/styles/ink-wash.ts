@@ -10,7 +10,7 @@ import type { StyleDef, Token } from "./types.js";
 const PAPER = "#F2ECDE", INK = "#1A1714", SEAL = "#B8322A";
 // washes: five ink tones plus light 花青 / 藤黄 / 朱 tints
 const WASH: Record<string, [string, number]> = {
-  yellow: ["#8a7a52", 0.2], blue: ["#4f6f7f", 0.2], green: ["#5f6f45", 0.2], red: ["#b8322a", 0.18], grey: ["#1a1714", 0.1], black: ["#1a1714", 0.55], white: ["#f2ecde", 0],
+  yellow: ["#d9a514", 0.5], blue: ["#1f5fae", 0.55], green: ["#3f8a2c", 0.48], red: ["#c4321f", 0.45], grey: ["#1a1714", 0.1], black: ["#1a1714", 0.55], white: ["#f2ecde", 0],
 };
 
 const strokeCache = new Map<string, { pts: Pt[]; seed: number }>();

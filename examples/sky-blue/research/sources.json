@@ -1,0 +1,18 @@
+{
+  "claims": [
+    {
+      "claim": "Rayleigh scattering intensity is proportional to 1/wavelength^4, so 450 nm scatters (700/450)^4 = 5.9 times more than 700 nm and 550 nm 2.6 times more.",
+      "source": "https://en.wikipedia.org/wiki/Rayleigh_scattering",
+      "note": "ratios computed from the 1/lambda^4 law; wavelengths are representative values"
+    },
+    {
+      "claim": "Violet scatters more than blue, but the sky looks blue because sunlight contains less violet, some is absorbed high in the atmosphere, and human eyes are less sensitive to violet.",
+      "source": "https://en.wikipedia.org/wiki/Diffuse_sky_radiation"
+    },
+    {
+      "claim": "Relative air mass reaches approximately 38 at the horizon.",
+      "source": "https://en.wikipedia.org/wiki/Air_mass_(astronomy)",
+      "note": "Kasten & Young (1989) formula"
+    }
+  ]
+}

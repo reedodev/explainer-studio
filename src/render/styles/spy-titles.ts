@@ -7,20 +7,20 @@ import { blobPts, cachedTexture, clamp01, easeOutCubic, ellipsePts, fillPoly, fo
 import { bandSubtitle, layoutText, processedImage, revealText, styledIcon } from "./shared.js";
 import type { Env, StyleDef, Token } from "./types.js";
 
-const BLACK = "#1B1714", CREAM = "#EFE4C9", RED = "#D23A22", MUSTARD = "#E2A52A";
+const BLACK = "#1B1714", CREAM = "#EFE4C9", RED = "#D23A22", MUSTARD = "#E2A52A", TEAL = "#1F6E7E", OLIVE = "#5E7A2A";
 const GROUNDS = [CREAM, RED, BLACK, MUSTARD];
 const ground = (env: Env) => GROUNDS[env.sceneIndex % GROUNDS.length];
 const isDark = (hex: string) => hex === BLACK || hex === RED;
 /** Token -> ink, never the same as the ground. */
 function inkFor(token: Token | undefined, env: Env): string {
   const g = ground(env);
-  const want: Record<string, string> = { yellow: MUSTARD, red: RED, blue: BLACK, green: CREAM, grey: "#3A322B", black: BLACK, white: CREAM };
+  const want: Record<string, string> = { yellow: MUSTARD, red: RED, blue: TEAL, green: OLIVE, grey: "#3A322B", black: BLACK, white: CREAM };
   let col = want[token ?? "black"] ?? BLACK;
   if (col === g) col = g === BLACK ? CREAM : g === CREAM ? BLACK : g === RED ? BLACK : BLACK;
   if (col === "#3A322B" && g === BLACK) col = "#9A2A18";
   return col;
 }
-const contrast = (bg: string) => (isDark(bg) || bg === "#3A322B" || bg === "#9A2A18" ? CREAM : BLACK);
+const contrast = (bg: string) => (isDark(bg) || bg === TEAL || bg === OLIVE || bg === "#3A322B" || bg === "#9A2A18" ? CREAM : BLACK);
 
 function paperPiece(c: any, pts: Pt[], color: string, g: string, alpha = 1) {
   c.save();

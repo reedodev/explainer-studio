@@ -35,14 +35,14 @@ description: "한 줄 주제를 장면표(storyboard.json)로 바꾸고, 같은 
 
 ## 절차
 1. **주제를 한 줄로 확정하고 사실을 조사합니다.** 수치와 주장은 출처를 `research/sources.json`에 적습니다. 확인하지 못한 내용은 내레이션에 넣지 않습니다.
-2. **장면표를 씁니다.** `npm run es -- init "How does X work?" --slug my-topic --style whiteboard`로 틀을 만들고 `output/my-topic/storyboard.json`을 채웁니다.
-   - 장면 6~8개, 장면마다 내레이션 2~3문장, 문장은 짧게 씁니다.
-   - **첫 장면은 결과부터** 보여 줍니다("이 유리 실이 바다를 건넜습니다"). 질문과 배경은 그다음입니다.
-   - 좌표는 1920x1080 기준입니다. 요소는 y 140~930 안에 두고(아래는 자막 자리), 오른쪽 위 320x130은 비워 둡니다. 글자는 28px 이상, 장면당 요소는 12개 이하입니다.
-   - 요소 종류: `text`(role: title/heading/body/label/caption), `rectangle`, `circle`(label 가능), `line`(points), `arrow`(from/to/bend/label), `icon`(chat, robot, gear, tool, search, database, loop, check, warning, document, globe, lightbulb, lock, clock, folder, scale, door, bell, slides), `chart`(bar), `highlight`(target, style: underline/circle/marker), `image`, `sticker`.
-   - 색은 이름으로만 씁니다: black, yellow, blue, green, red, grey, white. 스타일이 각자의 색으로 바꿔 그립니다.
-   - `drawOrder`에 모든 요소 id를 그리는 순서대로 넣습니다. `cue`(문장 번호)를 주면 그 문장에서 그려집니다.
-   - 예시는 `examples/fiber-optics/storyboard.json`(영어 7장면, 수치 출처는 같은 폴더의 `research/sources.json`)과 `examples/ai-agent-vs-chatbot-ko/storyboard.json`(한국어 5장면)에 있습니다. 숫자가 들어가는 장면은 출처를 `research/sources.json`에 함께 적고, 확인하지 않은 수치는 차트에 넣지 않습니다.
+2. **장면표를 씁니다.** `npm run es -- init "How does X work?" --slug my-topic --style whiteboard`가 화면을 꽉 채운 3장면짜리 시작 장면표를 `output/my-topic/storyboard.json`에 만들고 다음에 할 명령을 알려 줍니다. **먼저 [reference/storyboard-recipes.md](reference/storyboard-recipes.md)를 읽습니다.** 그대로 복사해 쓸 수 있는 최소 장면표, 요소 종류별 필수·선택 필드 표, 좌표가 적힌 배치 레시피 6가지(A와 B 비교, 4단계 과정, 순환, 차트와 설명 상자, 단면, 연표), 시간 규칙, 길이 계산이 모두 그 파일에 있습니다.
+   - 장면 6~8개, 장면마다 내레이션 두 문장 안팎으로 쓰고, **첫 장면에서 결과를 먼저** 보여 준 다음 질문과 배경으로 넘어갑니다.
+   - 장면마다 레시피 하나를 골라 좌표를 거의 그대로 쓰면, 화면의 3분의 1 이상을 채우고 요소 4~9개가 들어간 장면이 나옵니다.
+   - 제목은 x 120, y 140, w 1400, h 90, 64px이고, 내용은 y 260~900 사이에 둡니다. y 930 아래는 자막 자리이고 오른쪽 위 320x130은 비워 둡니다. 엔진이 y 140보다 위에 있는 요소를 아래로 옮기므로 처음부터 그 안에 둡니다.
+   - 색은 이름(black, yellow, blue, green, red, grey, white)으로만 쓰고, 스타일마다 자기 팔레트로 칠합니다. 아이콘 이름 목록도 레시피 파일에 있습니다.
+   - 기본 시간 규칙에서는 모든 요소가 장면의 65% 시점까지 다 그려지고, 남은 시간에는 완성된 그림이 보입니다. 특정 문장에 맞춰 나타나게 하려면 `cue`(문장 번호, 0부터)를, 한 요소만 빨리 그리려면 `dur`를 씁니다.
+   - 길이는 무음 기준으로 영어 초당 약 2.6단어, 한국어 초당 약 6.5음절입니다. 40초 영상이면 영어 약 100단어, 한국어 약 250음절입니다.
+   - 숫자가 들어가는 장면은 출처를 `research/sources.json`에 적고, 확인하지 않은 수치는 차트에 넣지 않습니다. 예시는 `examples/sky-blue`(영어 6장면, 레시피만으로 작성), `examples/fiber-optics`(영어 7장면), `examples/ai-agent-vs-chatbot-ko`(한국어 5장면)에 있습니다.
 3. **스타일을 고릅니다.**
 
    | 메시지 | 스타일 |
@@ -59,7 +59,9 @@ description: "한 줄 주제를 장면표(storyboard.json)로 바꾸고, 같은 
    npm run es -- build my-topic --tts edge      # 음성 → 시간 맞추기 → 검사 → 렌더
    npm run es -- render my-topic --style ink-wash   # 같은 장면표를 다른 스타일로(variants/ 아래)
    ```
-   검사는 화면 밖 요소, 자막 자리 침범, 작은 글자, 겹침, 글자 넘침, 10초 이상 멈춘 화면을 찾아 고치고, 남은 오류가 있으면 렌더를 거부합니다.
+   검사는 화면 밖 요소, 자막 자리 침범, 작은 글자, 겹침, 글자 넘침, 10초 이상 멈춘 화면을 찾아 고치고, 남은 오류가 있으면 렌더를 거부합니다. `sparse scene`(화면이 3분의 1도 안 찼음)과 `few visual elements`(그림 요소가 4개 미만) 경고는 레시피대로 요소를 키우거나 늘려서 고칩니다. 강조 표시와 그 대상, 일부러 겹친 원처럼 의도한 `overlap` 경고는 화면을 직접 본 뒤 그대로 둬도 됩니다.
+
+   결과 위치: `build`와 메인 스타일 `render`는 프로젝트 폴더의 `final.mp4`에, 다른 스타일 `render --style <id>`는 `variants/<id>/final.mp4`에 씁니다. `init --slug 이름`은 `output/이름/`을 만들고, 폴더 경로를 그대로 넘겨도 됩니다.
 5. **공유 전에 직접 봅니다.** `preview/`의 장면 이미지와 `frames/`의 중간·전환 프레임을 열어 글자 잘림과 겹침을 확인하고, 완성 MP4를 처음부터 끝까지 재생해 소리와 자막을 듣고 봅니다. 검사 통과는 시청 확인을 대신하지 못합니다.
 
 ## 한계

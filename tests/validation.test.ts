@@ -13,7 +13,7 @@ detects('too many elements',b=>{b.scenes[0].elements=Array.from({length:13},(_,i
 detects('static tail >=10s',b=>b.scenes[0].elements[0].end=8,'static >=10s');
 detects('static gap >=10s',b=>Object.assign(b.scenes[0].elements[0],{start:11,end:19}),'static >=10s');
 detects('drawing past scene end',b=>b.scenes[0].elements[0].end=25,'drawing past scene end');
-detects('drawing finishing too early',b=>b.scenes[0].elements[0].end=10,'drawing finishing too early');
+detects('drawing finishing too early',b=>b.scenes[0].elements[0].end=4,'drawing finishing too early');
 const bad:any={start:0,end:2,text:'을 확인합니다.',scene:'test',sentence:'조건을 확인합니다.',sourceStart:2,sourceEnd:10};assert(subtitleIssues([bad]).some(i=>i.rule==='subtitle orphan particle'));count++;console.log('PASS orphan particle');assert(subtitleIssues([bad]).some(i=>i.rule==='subtitle mid-word fragment'));count++;console.log('PASS mid-word provenance');
 for(const text of ['가'.repeat(25),'첫 줄\n둘째 줄\n셋째 줄']){assert(subtitleIssues([{...bad,text,sentence:''}]).some(i=>i.rule==='subtitle limits'));count++;}console.log('PASS subtitle length and line limits');
 assert(subtitleIssues([{...bad,text:'조건을 확인합니다. 다음을 봅니다.',sentence:''}]).some(i=>i.rule==='subtitle multiple sentences'));count++;console.log('PASS multiple sentence cue');
@@ -135,6 +135,7 @@ count++;console.log('PASS style aliases resolve and unknown styles are rejected'
   assert(Storyboard.safeParse({...mk(),subtitleSize:48}).success,'schema accepts subtitleSize');
   count++;console.log('PASS storyboard.subtitleSize: opt-in larger band subtitle stays in the band');
 }
-console.log(count+' tests passed; 0 failed.');
+{const {time,DRAW_BY}=await import('../src/timing.js');const b:any={scenes:[{narration:'One. Two.',duration:10,drawOrder:['a','b','c','d'],elements:['a','b','c','d'].map(id=>({id}))}]};time(b);const last=Math.max(...b.scenes[0].elements.map((e:any)=>e.end));assert(last<=10*DRAW_BY+0.01,'draws past DRAW_BY: '+last);assert(b.scenes[0].elements.every((e:any,i:number,a:any[])=>e.end>e.start&&(i===0||e.start>=a[i-1].end-1e-9)),'windows not sequential');const c:any={scenes:[{narration:'One. Two.',duration:10,drawOrder:['a','b'],elements:[{id:'a'},{id:'b',cue:1}]}]};time(c);assert(Math.abs(c.scenes[0].elements[1].start-10*0.92*4/9)<0.01,'cue start not respected');count++;console.log('PASS default draw window finishes by DRAW_BY; cue start respected');}
+{const {coverage}=await import('../src/validation.js');const s:any={id:'x',elements:[{id:'a',type:'rectangle',x:100,y:100,w:200,h:150}]};assert(coverage(s)<0.1);const full:any={id:'y',elements:[{id:'a',type:'rectangle',x:80,y:80,w:1780,h:860}]};assert(coverage(full)>0.95);const arrowNear:any={id:'z',narration:'x',duration:5,drawOrder:['r','ar'],elements:[{id:'r',type:'rectangle',x:100,y:100,w:300,h:200},{id:'ar',type:'arrow',from:[420,200],to:[800,200]}]};assert(!validateBoard({scenes:[arrowNear]} as any).some((i:any)=>i.rule==='overlap'),'arrow next to a box flagged as overlap');const arrowThrough:any={...arrowNear,elements:[arrowNear.elements[0],{id:'ar',type:'arrow',from:[50,200],to:[800,200]}]};assert(validateBoard({scenes:[arrowThrough]} as any).some((i:any)=>i.rule==='overlap'),'arrow through a box not flagged');count++;console.log('PASS coverage guard and arrow overlap uses the drawn line');}console.log(count+' tests passed; 0 failed.');
 
 

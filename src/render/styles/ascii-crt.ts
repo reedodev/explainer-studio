@@ -8,7 +8,7 @@ import { cachedTexture, clamp01, easeInOutCubic, ellipsePts, font, rectPts, resa
 import { bandSubtitle, layoutText, revealText, styledIcon } from "./shared.js";
 import type { StyleDef } from "./types.js";
 
-const GLASS = "#0B0805", AMBER = "#FFB33A", DIM = "rgba(255,179,58,0.38)", ALT = "#9CFFB5";
+const GLASS = "#0B0805", AMBER = "#FFB33A", DIM = "rgba(255,179,58,0.38)", ALT = "#9CFFB5", RED_PH = "#FF6B4A", CYAN_PH = "#7FD8FF";
 const CW = 14, CH = 26; // cell size (1:~2)
 const FAMILY = "WB Mono";
 
@@ -131,7 +131,7 @@ export const asciiCrt: StyleDef = {
   summary: "호박색 인광 CRT 화면. 선과 도형이 전부 문자 격자로 찍히고, 글자는 커서와 함께 타이핑되는 터미널 룩",
   bestFor: "AI·개발·자동화 주제, 로그/프로세스 설명, 해커·레트로 감성",
   font: (role) => (role === "title" || role === "heading" ? { family: "WB Mono Bold", scale: 0.95 } : { family: FAMILY, scale: 0.9 }),
-  ink: (token) => (token === "red" ? ALT : AMBER),
+  ink: (token) => (token === "red" ? RED_PH : token === "green" ? ALT : token === "blue" ? CYAN_PH : AMBER),
   textColor: () => AMBER,
   background(c, env) {
     c.fillStyle = GLASS;
@@ -166,12 +166,12 @@ export const asciiCrt: StyleDef = {
       }
       const fillP = clamp01((p - 0.55) / 0.45);
       if (s.fill && s.fill !== "white" && fillP > 0) {
-        const glyph = s.fill === "yellow" ? "▒" : s.fill === "red" ? "▒" : "░";
+        const glyph = s.fill === "yellow" ? "▓" : s.fill === "red" ? "▒" : s.fill === "green" ? "▒" : s.fill === "blue" ? "░" : "·";
         c.save();
-        c.globalAlpha = s.fill === "yellow" || s.fill === "red" ? 0.3 : 0.22;
+        c.globalAlpha = s.fill === "yellow" ? 0.4 : s.fill === "red" ? 0.45 : s.fill === "green" ? 0.42 : s.fill === "blue" ? 0.45 : 0.2;
         const inner: Cell[] = [];
         for (let y = r0 + 1; y < r1; y++) for (let x = c0 + 1; x < c1; x++) inner.push([x, y, glyph]);
-        drawCells(c, inner, Math.ceil(inner.length * fillP), s.fill === "red" ? ALT : AMBER);
+        drawCells(c, inner, Math.ceil(inner.length * fillP), s.fill === "red" ? RED_PH : s.fill === "green" ? ALT : s.fill === "blue" ? CYAN_PH : AMBER);
         c.restore();
       }
       drawCells(c, per, Math.ceil(per.length * clamp01(p / 0.6)), this.ink(s.stroke ?? (s.fill === "red" ? "red" : undefined), env));

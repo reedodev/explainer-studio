@@ -8,8 +8,8 @@ import { bandSubtitle, layoutText, processedImage, revealText, styledIcon } from
 import type { StyleDef, Token } from "./types.js";
 
 const INK = "#111111", RED = "#E30613", PAPER = "#FFFFFF", GRID = "#ECEBE7";
-const FILL: Record<string, string> = { yellow: INK, red: RED, blue: "#CFCEC9", green: "#E2E1DC", grey: "#EAE9E5", white: PAPER, black: INK };
-const dark = (t?: Token) => t === "yellow" || t === "red" || t === "black";
+const FILL: Record<string, string> = { yellow: "#FFCE00", red: RED, blue: "#1F4FC4", green: "#0E8A55", grey: "#EAE9E5", white: PAPER, black: INK };
+const dark = (t?: Token) => t === "blue" || t === "green" || t === "red" || t === "black";
 
 export const swissMotion: StyleDef = {
   id: "swiss-motion",

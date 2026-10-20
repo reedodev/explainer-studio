@@ -9,6 +9,7 @@ import { bandSubtitle, genericCover, processedImage, revealText } from "./shared
 import type { StyleDef } from "./types.js";
 
 const BG = "#173F6D", LINE = "#E7F0F9", RED = "#E0624F";
+const HATCH_COL: Record<string, string> = { red: "rgba(240,110,90,0.9)", yellow: "rgba(255,212,90,0.85)", green: "rgba(120,230,140,0.8)", blue: "rgba(70,170,255,1)" };
 const HATCH: Record<string, [number, number]> = { yellow: [45, 10], blue: [-45, 16], green: [45, 22], red: [45, 8], grey: [0, 18], black: [45, 6], white: [0, 999] };
 
 export const blueprint: StyleDef = {
@@ -74,8 +75,8 @@ export const blueprint: StyleDef = {
       if (s.kind === "ellipse") c.ellipse(s.x + s.w / 2, s.y + s.h / 2, s.w / 2, s.h / 2, 0, 0, Math.PI * 2);
       else c.rect(s.x, s.y, s.w, s.h);
       c.clip();
-      c.strokeStyle = s.fill === "red" ? "rgba(224,98,79,0.55)" : "rgba(231,240,249,0.32)";
-      c.lineWidth = 1.2;
+      c.strokeStyle = HATCH_COL[s.fill] ?? "rgba(231,240,249,0.32)";
+      c.lineWidth = HATCH_COL[s.fill] ? 1.8 : 1.2;
       const cx = s.x + s.w / 2, cy = s.y + s.h / 2, R = Math.hypot(s.w, s.h) / 2 + 4;
       const a = (ang * Math.PI) / 180, dx = Math.cos(a), dy = Math.sin(a);
       const n = Math.ceil((2 * R) / gap);

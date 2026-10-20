@@ -25,6 +25,7 @@ import { font } from "./render/core.js";
 import { STICKER_STYLE_PROMPT } from "./config.js";
 import { makeSubtitles } from "./subtitles.js";
 import { validateBoard } from "./validation.js";
+import { time } from "./timing.js";
 import { scriptMarkdown, sourcesMarkdown, publishMarkdown } from "./docs.js";
 
 const args = process.argv.slice(2);
@@ -39,9 +40,41 @@ const stamp = (n: number) => {
 };
 
 function template(topic: string, style: string) {
+  // A 3-scene starter that already uses the full frame: result first, a 4-step process, a chart with a callout.
+  // Replace every text, keep the layout, and only add numbers you can source (research/sources.json).
+  const title = (text: string) => ({ id: "title", type: "text", role: "title", x: 120, y: 140, w: 1400, h: 90, text, fontSize: 64 });
+  const steps = [0, 1, 2, 3];
   return {
-    version: 1, title: topic, topic, style, canvas: { width: 1920, height: 1080 }, stickers: [],
-    scenes: [{ id: "scene-01", narration: "Replace this sentence with researched narration.", duration: 0, layout: "three-column", elements: [{ id: "title", type: "text", x: 100, y: 160, w: 1500, h: 100, text: topic, fontSize: 64 }], drawOrder: ["title"] }],
+    version: 1, title: topic, topic, style, language: /[\uac00-\ud7a3]/.test(topic) ? "ko" : "en", canvas: { width: 1920, height: 1080 }, stickers: [],
+    scenes: [
+      { id: "scene-01", section: "hook", layout: "free", duration: 0,
+        narration: "Open with the result in one clear sentence. Then say in a second sentence why it matters to the viewer.",
+        elements: [title(topic),
+          { id: "before", type: "rectangle", x: 120, y: 280, w: 700, h: 340, fill: "grey", label: "Before: the problem", labelSize: 46 },
+          { id: "arrow", type: "arrow", from: [830, 440], to: [1060, 440] },
+          { id: "after", type: "rectangle", x: 1100, y: 280, w: 700, h: 340, fill: "yellow", label: "After: the result", labelSize: 46 },
+          { id: "i1", type: "icon", icon: "warning", x: 400, y: 670, w: 130, h: 130 },
+          { id: "i2", type: "icon", icon: "check", x: 1385, y: 670, w: 130, h: 130 },
+          { id: "hl", type: "highlight", target: "after", style: "circle" }],
+        drawOrder: ["title", "before", "arrow", "after", "i1", "i2", "hl"] },
+      { id: "scene-02", section: "structure", layout: "free", duration: 0,
+        narration: "Explain how it works in four short steps. Keep each step to a few words on screen.",
+        elements: [title("How it works"),
+          ...steps.map((k) => ({ id: "s" + k, type: "rectangle", x: 120 + k * 430, y: 290, w: 360, h: 260, fill: (["blue", "green", "yellow", "red"] as const)[k], label: `${k + 1} step`, labelSize: 44 })),
+          ...steps.slice(0, 3).map((k) => ({ id: "a" + k, type: "arrow", from: [485 + k * 430, 420], to: [545 + k * 430, 420] })),
+          ...steps.map((k) => ({ id: "ic" + k, type: "icon", icon: (["search", "gear", "document", "check"] as const)[k], x: 235 + k * 430, y: 610, w: 130, h: 130 }))],
+        drawOrder: ["title", "s0", "a0", "s1", "a1", "s2", "a2", "s3", "ic0", "ic1", "ic2", "ic3"] },
+      { id: "scene-03", section: "example", layout: "free", duration: 0,
+        narration: "Show one real number from a source you checked. Then say what it means for the viewer.",
+        elements: [title("One number that matters"),
+          { id: "chart", type: "chart", chartType: "bar", x: 140, y: 270, w: 1000, h: 560, data: [{ label: "before", value: 1, color: "grey" }, { label: "after", value: 3, color: "blue" }] },
+          { id: "call", type: "rectangle", x: 1240, y: 300, w: 560, h: 260, fill: "yellow", label: "Replace with a sourced takeaway", labelSize: 40 },
+          { id: "ar", type: "arrow", from: [1240, 520], to: [1000, 600] },
+          { id: "bulb", type: "icon", icon: "lightbulb", x: 1460, y: 620, w: 130, h: 130 },
+          { id: "hb", type: "highlight", x: 720, y: 270, w: 380, h: 600, style: "circle" },
+          { id: "src", type: "text", role: "caption", x: 140, y: 870, w: 1300, h: 50, text: "source: replace me", fontSize: 30 }],
+        drawOrder: ["title", "chart", "call", "ar", "bulb", "src", "hb"] },
+    ],
   };
 }
 
@@ -73,23 +106,6 @@ function fixTextFit(b: any, issues: any[]) {
     else if (e.label && (e.labelSize || 42) > 28) { e.labelSize = Math.max(28, Math.floor((e.labelSize || 42) * 0.92)); changed++; }
   }
   return changed;
-}
-function time(b: any) {
-  // fx.manualTiming: element windows were re-timed from measured audio (project tool); keep them
-  if (b.fx?.manualTiming) return;
-  for (const s of b.scenes) {
-    const sentences = s.narration.match(/[^.!?]+[.!?]?/g) || [s.narration];
-    const weights = sentences.map((x: string) => x.length), total = weights.reduce((a: number, c: number) => a + c, 0);
-    let prior = 0;
-    for (let i = 0; i < s.drawOrder.length; i++) {
-      const e = s.elements.find((q: any) => q.id === s.drawOrder[i]);
-      const cue = e.cue === undefined ? i / s.drawOrder.length : weights.slice(0, e.cue).reduce((a: number, c: number) => a + c, 0) / total;
-      e.start = Math.max(prior, cue * s.duration * 0.92);
-      e.end = Math.min(s.duration - 0.1, Math.max(e.start + 0.3, ((i + 1) / s.drawOrder.length) * s.duration * 0.97));
-      if (e.dur) e.end = Math.min(e.end, e.start + Math.max(0.3, e.dur)); // opt-in fast reveal
-      prior = e.end;
-    }
-  }
 }
 const count = (list: any[], lvl: string) => list.filter((x) => x.level === lvl).length;
 
@@ -149,6 +165,7 @@ async function main() {
     saveJson(p.sourcesJson, { claims: [] });
     saveJson(p.publishJson, {});
     console.log(p.dir);
+    console.log(`next: edit ${p.storyboard} (layout recipes: skills/explainer-studio/reference/storyboard-recipes.md), then run: npm run es -- build ${p.dir} --tts silent`);
     return;
   }
   if (cmd === "narrate") {

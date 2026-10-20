@@ -1,0 +1,703 @@
+{
+  "version": 1,
+  "title": "Why is the sky blue?",
+  "topic": "Why is the sky blue?",
+  "language": "en",
+  "style": "ink-wash",
+  "cover": {
+    "title": "Why is the sky blue?"
+  },
+  "scenes": [
+    {
+      "id": "scene-01",
+      "section": "hook",
+      "layout": "free",
+      "duration": 0,
+      "narration": "The sky is blue because air scatters blue light about six times more than red. Red mostly passes straight through.",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "x": 120,
+          "y": 140,
+          "w": 1400,
+          "h": 90,
+          "text": "Air scatters blue",
+          "fontSize": 64
+        },
+        {
+          "id": "sun",
+          "type": "circle",
+          "x": 140,
+          "y": 362,
+          "w": 300,
+          "h": 276,
+          "fill": "yellow",
+          "label": "Sun",
+          "labelSize": 52
+        },
+        {
+          "id": "red",
+          "type": "arrow",
+          "from": [
+            460,
+            500
+          ],
+          "to": [
+            1160,
+            500
+          ],
+          "label": "red passes through",
+          "labelSize": 34,
+          "stroke": "red"
+        },
+        {
+          "id": "b1",
+          "type": "arrow",
+          "from": [
+            560,
+            500
+          ],
+          "to": [
+            700,
+            316
+          ],
+          "stroke": "blue"
+        },
+        {
+          "id": "b2",
+          "type": "arrow",
+          "from": [
+            700,
+            500
+          ],
+          "to": [
+            860,
+            684
+          ],
+          "stroke": "blue"
+        },
+        {
+          "id": "b3",
+          "type": "arrow",
+          "from": [
+            960,
+            500
+          ],
+          "to": [
+            1110,
+            684
+          ],
+          "stroke": "blue"
+        },
+        {
+          "id": "card",
+          "type": "rectangle",
+          "x": 1220,
+          "y": 344,
+          "w": 580,
+          "h": 313,
+          "fill": "blue",
+          "label": "blue scatters about 6x more than red",
+          "labelSize": 46
+        },
+        {
+          "id": "hl",
+          "type": "highlight",
+          "target": "card",
+          "style": "circle"
+        },
+        {
+          "id": "eye",
+          "type": "icon",
+          "icon": "globe",
+          "x": 1450,
+          "y": 702,
+          "w": 120,
+          "h": 110
+        },
+        {
+          "id": "src",
+          "type": "text",
+          "role": "caption",
+          "x": 140,
+          "y": 870,
+          "w": 1300,
+          "h": 50,
+          "text": "Rayleigh scattering, 450 nm vs 700 nm: (700/450)^4 = 5.9",
+          "fontSize": 30
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "sun",
+        "red",
+        "b1",
+        "b2",
+        "b3",
+        "card",
+        "hl",
+        "eye",
+        "src"
+      ]
+    },
+    {
+      "id": "scene-02",
+      "section": "concept",
+      "layout": "free",
+      "duration": 0,
+      "narration": "Sunlight looks white, but it is a mix of every color. A prism spreads it into a rainbow.",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "x": 120,
+          "y": 140,
+          "w": 1400,
+          "h": 90,
+          "text": "White light is every color",
+          "fontSize": 64
+        },
+        {
+          "id": "sun",
+          "type": "circle",
+          "x": 120,
+          "y": 390,
+          "w": 260,
+          "h": 239,
+          "fill": "yellow",
+          "label": "white",
+          "labelSize": 44
+        },
+        {
+          "id": "ar",
+          "type": "arrow",
+          "from": [
+            400,
+            509
+          ],
+          "to": [
+            560,
+            509
+          ]
+        },
+        {
+          "id": "r",
+          "type": "rectangle",
+          "x": 600,
+          "y": 307,
+          "w": 560,
+          "h": 110,
+          "fill": "red",
+          "label": "red  700 nm",
+          "labelSize": 44
+        },
+        {
+          "id": "y",
+          "type": "rectangle",
+          "x": 600,
+          "y": 454,
+          "w": 560,
+          "h": 110,
+          "fill": "yellow",
+          "label": "yellow  580 nm",
+          "labelSize": 44
+        },
+        {
+          "id": "g",
+          "type": "rectangle",
+          "x": 600,
+          "y": 601,
+          "w": 560,
+          "h": 110,
+          "fill": "green",
+          "label": "green  550 nm",
+          "labelSize": 44
+        },
+        {
+          "id": "b",
+          "type": "rectangle",
+          "x": 600,
+          "y": 748,
+          "w": 560,
+          "h": 110,
+          "fill": "blue",
+          "label": "blue  450 nm",
+          "labelSize": 44
+        },
+        {
+          "id": "tag",
+          "type": "rectangle",
+          "x": 1260,
+          "y": 454,
+          "w": 540,
+          "h": 258,
+          "fill": "grey",
+          "label": "shorter wave, bluer light",
+          "labelSize": 46
+        },
+        {
+          "id": "ar2",
+          "type": "arrow",
+          "from": [
+            1200,
+            804
+          ],
+          "to": [
+            1400,
+            730
+          ],
+          "bend": -40
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "sun",
+        "ar",
+        "r",
+        "y",
+        "g",
+        "b",
+        "tag",
+        "ar2"
+      ]
+    },
+    {
+      "id": "scene-03",
+      "section": "structure",
+      "layout": "free",
+      "duration": 0,
+      "narration": "Tiny air molecules scatter short waves much more strongly. Scattering grows with one over the wavelength to the fourth power.",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "x": 120,
+          "y": 140,
+          "w": 1400,
+          "h": 90,
+          "text": "Short waves scatter far more",
+          "fontSize": 64
+        },
+        {
+          "id": "chart",
+          "type": "chart",
+          "chartType": "bar",
+          "x": 140,
+          "y": 288,
+          "w": 1000,
+          "h": 552,
+          "data": [
+            {
+              "label": "red 700 nm · 1",
+              "value": 1,
+              "color": "red"
+            },
+            {
+              "label": "green 550 nm · 2.6",
+              "value": 2.6,
+              "color": "green"
+            },
+            {
+              "label": "blue 450 nm · 5.9",
+              "value": 5.9,
+              "color": "blue"
+            }
+          ]
+        },
+        {
+          "id": "call",
+          "type": "rectangle",
+          "x": 1240,
+          "y": 325,
+          "w": 560,
+          "h": 276,
+          "fill": "yellow",
+          "label": "scattering grows as 1 / wavelength^4",
+          "labelSize": 44
+        },
+        {
+          "id": "ar",
+          "type": "arrow",
+          "from": [
+            1240,
+            564
+          ],
+          "to": [
+            1060,
+            390
+          ]
+        },
+        {
+          "id": "hl",
+          "type": "highlight",
+          "x": 800,
+          "y": 298,
+          "w": 360,
+          "h": 598,
+          "style": "circle"
+        },
+        {
+          "id": "mol",
+          "type": "icon",
+          "icon": "gear",
+          "x": 1460,
+          "y": 656,
+          "w": 120,
+          "h": 110
+        },
+        {
+          "id": "src",
+          "type": "text",
+          "role": "caption",
+          "x": 140,
+          "y": 870,
+          "w": 1300,
+          "h": 50,
+          "text": "relative to red = (700 / wavelength)^4 · Rayleigh scattering",
+          "fontSize": 30
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "chart",
+        "call",
+        "ar",
+        "hl",
+        "mol",
+        "src"
+      ]
+    },
+    {
+      "id": "scene-04",
+      "section": "question",
+      "layout": "free",
+      "duration": 0,
+      "narration": "Violet scatters even more. But sunlight carries less violet, and our eyes are less sensitive to it.",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "x": 120,
+          "y": 140,
+          "w": 1400,
+          "h": 90,
+          "text": "So why not violet?",
+          "fontSize": 64
+        },
+        {
+          "id": "v",
+          "type": "rectangle",
+          "x": 120,
+          "y": 298,
+          "w": 760,
+          "h": 276,
+          "fill": "grey",
+          "label": "violet: scatters most",
+          "labelSize": 48
+        },
+        {
+          "id": "b",
+          "type": "rectangle",
+          "x": 1040,
+          "y": 298,
+          "w": 760,
+          "h": 276,
+          "fill": "blue",
+          "label": "blue: plenty in sunlight",
+          "labelSize": 48
+        },
+        {
+          "id": "i1",
+          "type": "icon",
+          "icon": "warning",
+          "x": 445,
+          "y": 610,
+          "w": 110,
+          "h": 101
+        },
+        {
+          "id": "i2",
+          "type": "icon",
+          "icon": "check",
+          "x": 1365,
+          "y": 610,
+          "w": 110,
+          "h": 101
+        },
+        {
+          "id": "t1",
+          "type": "text",
+          "role": "body",
+          "x": 120,
+          "y": 739,
+          "w": 760,
+          "h": 110,
+          "text": "less in sunlight, weak in our eyes",
+          "fontSize": 40,
+          "align": "center"
+        },
+        {
+          "id": "t2",
+          "type": "text",
+          "role": "body",
+          "x": 1040,
+          "y": 739,
+          "w": 760,
+          "h": 110,
+          "text": "our eyes see the sky as blue",
+          "fontSize": 40,
+          "align": "center"
+        },
+        {
+          "id": "hl",
+          "type": "highlight",
+          "target": "b",
+          "style": "circle"
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "v",
+        "b",
+        "i1",
+        "i2",
+        "t1",
+        "t2",
+        "hl"
+      ]
+    },
+    {
+      "id": "scene-05",
+      "section": "example",
+      "layout": "free",
+      "duration": 0,
+      "narration": "At sunset the light crosses up to about thirty-eight times more air. Blue is scattered away on the way, so red and orange remain.",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "x": 120,
+          "y": 140,
+          "w": 1400,
+          "h": 90,
+          "text": "Sunset: up to 38x more air",
+          "fontSize": 64
+        },
+        {
+          "id": "noon",
+          "type": "rectangle",
+          "x": 120,
+          "y": 362,
+          "w": 520,
+          "h": 129,
+          "fill": "blue",
+          "label": "noon · 1x air",
+          "labelSize": 42
+        },
+        {
+          "id": "na",
+          "type": "arrow",
+          "from": [
+            380,
+            270
+          ],
+          "to": [
+            380,
+            353
+          ],
+          "stroke": "black"
+        },
+        {
+          "id": "set",
+          "type": "rectangle",
+          "x": 760,
+          "y": 362,
+          "w": 1040,
+          "h": 129,
+          "fill": "red",
+          "label": "sunset · up to 38x air",
+          "labelSize": 42
+        },
+        {
+          "id": "sa",
+          "type": "arrow",
+          "from": [
+            760,
+            564
+          ],
+          "to": [
+            1800,
+            564
+          ],
+          "label": "long path through air",
+          "labelSize": 34
+        },
+        {
+          "id": "lost",
+          "type": "rectangle",
+          "x": 760,
+          "y": 656,
+          "w": 500,
+          "h": 184,
+          "fill": "blue",
+          "label": "blue scattered away",
+          "labelSize": 40
+        },
+        {
+          "id": "left",
+          "type": "rectangle",
+          "x": 1300,
+          "y": 656,
+          "w": 500,
+          "h": 184,
+          "fill": "red",
+          "label": "red and orange reach you",
+          "labelSize": 40
+        },
+        {
+          "id": "hl",
+          "type": "highlight",
+          "target": "left",
+          "style": "circle"
+        },
+        {
+          "id": "src",
+          "type": "text",
+          "role": "caption",
+          "x": 140,
+          "y": 870,
+          "w": 1300,
+          "h": 50,
+          "text": "relative air mass at the horizon is about 38 (Kasten & Young 1989)",
+          "fontSize": 30
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "noon",
+        "na",
+        "set",
+        "sa",
+        "lost",
+        "left",
+        "hl",
+        "src"
+      ]
+    },
+    {
+      "id": "scene-06",
+      "section": "summary",
+      "layout": "free",
+      "duration": 0,
+      "narration": "White sunlight, blue scattered six times more, red left for sunsets. That is the blue sky.",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "role": "title",
+          "x": 120,
+          "y": 140,
+          "w": 1400,
+          "h": 90,
+          "text": "Air scatters blue",
+          "fontSize": 64
+        },
+        {
+          "id": "sun",
+          "type": "circle",
+          "x": 140,
+          "y": 362,
+          "w": 300,
+          "h": 276,
+          "fill": "yellow",
+          "label": "Sun",
+          "labelSize": 52
+        },
+        {
+          "id": "b1",
+          "type": "arrow",
+          "from": [
+            460,
+            500
+          ],
+          "to": [
+            640,
+            325
+          ],
+          "stroke": "blue"
+        },
+        {
+          "id": "b2",
+          "type": "arrow",
+          "from": [
+            460,
+            500
+          ],
+          "to": [
+            640,
+            675
+          ],
+          "stroke": "blue"
+        },
+        {
+          "id": "c1",
+          "type": "rectangle",
+          "x": 720,
+          "y": 288,
+          "w": 1080,
+          "h": 138,
+          "fill": "yellow",
+          "label": "1  sunlight mixes every color",
+          "labelSize": 44
+        },
+        {
+          "id": "c2",
+          "type": "rectangle",
+          "x": 720,
+          "y": 454,
+          "w": 1080,
+          "h": 138,
+          "fill": "blue",
+          "label": "2  blue scatters about 6x more than red",
+          "labelSize": 44
+        },
+        {
+          "id": "c3",
+          "type": "rectangle",
+          "x": 720,
+          "y": 620,
+          "w": 1080,
+          "h": 138,
+          "fill": "red",
+          "label": "3  long sunset paths leave red",
+          "labelSize": 44
+        },
+        {
+          "id": "k",
+          "type": "icon",
+          "icon": "check",
+          "x": 1660,
+          "y": 785,
+          "w": 110,
+          "h": 101
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "sun",
+        "b1",
+        "b2",
+        "c1",
+        "c2",
+        "c3",
+        "k"
+      ]
+    }
+  ]
+}

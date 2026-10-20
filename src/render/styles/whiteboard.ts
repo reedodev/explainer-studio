@@ -61,6 +61,7 @@ export function drawSequential(c: Ctx, paths: Pt[][], p: number) {
 }
 
 const pal = PALETTE as Record<string, string>;
+const STROKE: Record<string, string> = { red: "#e03131", blue: "#1971c2", green: "#2f9e44", yellow: "#f08c00", grey: "#868e96" };
 
 export const whiteboard: StyleDef = {
   id: "whiteboard",
@@ -69,7 +70,8 @@ export const whiteboard: StyleDef = {
   summary: "흰 보드 위에 검은 마커로 한 획씩 그리는 Excalidraw 풍 설명 영상",
   bestFor: "개념 설명, 강의, 제품 원리, 비교",
   font: (role) => (role === "caption" ? { family: "WB Hand", scale: 1 } : { family: "WB Hand", scale: 1 }),
-  ink: (token) => pal[token ?? "black"] ?? pal.black,
+  // Excalidraw stroke colours: fills stay pastel, coloured lines use the strong variant.
+  ink: (token) => STROKE[token ?? "black"] ?? pal[token ?? "black"] ?? pal.black,
   textColor: () => pal.black,
   background(c, env) {
     c.fillStyle = "#ffffff";

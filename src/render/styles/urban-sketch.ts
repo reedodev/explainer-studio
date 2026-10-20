@@ -8,7 +8,7 @@ import { bandSubtitle, genericCover, processedImage, revealText } from "./shared
 import type { StyleDef, Token } from "./types.js";
 
 const PAPER = "#F5EEDE", INK = "#2B2520";
-const WASH: Record<string, string> = { yellow: "#E8C35E", blue: "#86B3D6", green: "#A9BF5A", red: "#E1907E", grey: "#BDB5A6", black: "#4a4038", white: "#F5EEDE" };
+const WASH: Record<string, string> = { yellow: "#EDB72E", blue: "#4F8FCF", green: "#7FB03A", red: "#DD6650", grey: "#BDB5A6", black: "#4a4038", white: "#F5EEDE" };
 
 const wobbleCache = new Map<string, Pt[]>();
 /** Pen line: resampled centreline with low-frequency wobble and an overshoot past both ends. */
@@ -50,7 +50,7 @@ function watercolor(c: any, kind: "rect" | "ellipse", x: number, y: number, w: n
     const pts = blobPts(kind, x + ox + 4, y + oy + 4, w - 8, h - 8, 6 + layer * 5, seed + layer * 31, 0.025);
     const sc = 0.55 + 0.45 * e;
     c.fillStyle = col;
-    c.globalAlpha = (layer === 0 ? 0.42 : 0.18) * e;
+    c.globalAlpha = (layer === 0 ? 0.58 : 0.22) * e;
     const P = pts.map(([px, py]) => [cx + (px - cx) * sc, cy + (py - cy) * sc] as Pt);
     fillPoly(c, P);
     if (layer === 0 && e > 0.6) {
