@@ -63,6 +63,7 @@ With Claude Code, install the skill and just ask: *"make an explainer video abou
 - **Text is real text.** Titles, labels and captions are typeset, never hallucinated pixels, so numbers and spelling stay correct.
 - **Checks before it renders.** Off-screen elements, captions colliding with content, tiny fonts, overflowing text and frozen screens are caught and auto-fixed where possible; remaining errors block the render. Half-empty scenes get a warning that says how to fill them.
 - **Captions included.** An `.srt` file and burned-in captions come with every render, in English or Korean.
+- **It keeps moving.** Each scene opens with the title and the first drawing together, then a slow deterministic camera push (or pan) and small idle motion on icons, arrows and highlights carry the held picture. Set `camera: "still"` or `fx.idle: false` to turn them off.
 
 ## How it works
 
@@ -73,7 +74,7 @@ Voices: `edge` (Microsoft Edge neural voices via an unofficial endpoint: check t
 ## Limitations
 
 - Landscape 1920x1080 only for now.
-- No character rigs, 3D or screen recordings; the drawable elements are listed above.
+- No character rigs, 3D or screen recordings; the drawable elements are listed above. Motion is a gentle camera and small idle loops, not keyframed animation.
 - Caption timing is proportional to sentence length, not word-level forced alignment.
 - Passing the checks is not the same as watching the video. Watch it before you publish.
 
@@ -93,6 +94,7 @@ Voices: `edge` (Microsoft Edge neural voices via an unofficial endpoint: check t
 
 - **GPU, 영상 생성 모델, 유료 API가 필요 없습니다.** CPU로 그린 프레임을 FFmpeg로 묶기 때문에 같은 입력이면 같은 영상이 나옵니다.
 - **글자는 실제 글자로 들어갑니다.** 제목, 이름표, 자막이 깨지거나 철자가 틀리지 않습니다.
+- **멈춰 있지 않습니다.** 장면이 시작되면 제목과 첫 그림이 함께 그려지고, 그다음에는 화면이 천천히 다가가며 아이콘·화살표·강조 표시가 살짝 움직입니다.
 - **렌더 전에 검사합니다.** 화면 밖 요소, 자막 자리 침범, 작은 글자, 글자 넘침, 10초 넘게 멈춘 화면을 찾아 고치고, 남은 오류가 있으면 렌더하지 않습니다.
 - **한국어와 영어 자막을 모두 지원합니다.** 음성은 `edge`(비공식 엔드포인트이므로 수익 목적 공개 전 이용 조건 확인), `sapi`(Windows), `cmd`(내 컴퓨터의 TTS 명령), `silent` 중에서 고릅니다.
 

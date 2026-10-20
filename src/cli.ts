@@ -108,6 +108,13 @@ function fixTextFit(b: any, issues: any[]) {
   return changed;
 }
 const count = (list: any[], lvl: string) => list.filter((x) => x.level === lvl).length;
+/** Short human list of remaining issues (use --json for the full objects). */
+function summary(list: any[], head: string) {
+  const e = count(list, "error"), w = count(list, "warning");
+  const line = (x: any) => `  ${x.level === "error" ? "ERROR" : "warn "} ${x.scene ?? ""}${x.id ? " / " + x.id : ""}: ${x.rule}${x.detail ? " (" + x.detail + ")" : ""}`;
+  const shown = [...list.filter((x) => x.level === "error"), ...list.filter((x) => x.level !== "error")].slice(0, 25);
+  return [`${head}`, `${e} error(s), ${w} warning(s)`, ...shown.map(line), list.length > shown.length ? `  ... ${list.length - shown.length} more in validation-report.md` : ""].filter(Boolean).join("\n");
+}
 
 /** Output locations for a style: the main project folder, or variants/<style>/. */
 function outFor(pp: ReturnType<typeof projectPaths>, b: any, style: string) {
@@ -276,8 +283,8 @@ async function main() {
   after = validate(b, pp.dir, style);
   saveJson(pp.storyboard, b);
   write(out.report, `# Validation report (${style})\n\nBefore: ${count(before, "error")} errors, ${count(before, "warning")} warnings.\n\nAfter: ${count(after, "error")} errors, ${count(after, "warning")} warnings.\n\n` + JSON.stringify({ before, after }, null, 2));
-  if (after.some((x) => x.level === "error")) throw Error(`Validation failed for style ${style}; final render refused. See ${out.report}`);
-  if (cmd === "validate") { console.log(`validate ${style}: ${count(after, "error")} errors, ${count(after, "warning")} warnings`); return; }
+  if (after.some((x) => x.level === "error")) { console.error(summary(after, `Validation failed for style ${style}; render refused.`)); throw Error(`Validation failed for style ${style}; final render refused. Full report: ${out.report}`); }
+  if (cmd === "validate") { console.log(has("--json") ? JSON.stringify(after, null, 2) : summary(after, `validate ${style}`)); return; }
 
   await loadAssets(b, pp.dir);
   const captions = makeSubtitles(shownBoard(b));
@@ -322,7 +329,8 @@ async function main() {
   write(pp.publishMd, publishMarkdown(fs.existsSync(pp.publishJson) ? read(pp.publishJson) : {}, b));
   const result = { style, provider, duration: b.scenes.reduce((m: number, s: any) => m + s.duration, 0), elapsedSec: (Date.now() - started) / 1000, before: before.length, after };
   saveJson(out.result, result);
-  console.log({ ...result, output: out.dir });
+  if (has("--json")) console.log(JSON.stringify({ ...result, output: out.dir }, null, 2));
+  else console.log(summary(after, `${style} done: ${result.duration.toFixed(1)} s video in ${result.elapsedSec.toFixed(0)} s -> ${out.final}`));
 }
 main().catch((e) => {
   console.error(e);

@@ -65,9 +65,16 @@ export function textLayoutFor(style: StyleDef, c: any, e: any, all: any[], label
   if (label) {
     if (!e.label) return null;
     const f = style.font("label");
-    const size = (e.labelSize || 42) * f.scale;
     const inset = e.type === "circle" ? { x: e.x + e.w * 0.14 + 10, y: e.y + e.h * 0.14, w: e.w * 0.72 - 20, h: e.h * 0.72 } : { x: e.x + 22, y: e.y + 18, w: e.w - 44, h: e.h - 36 };
-    return layoutText(c, e.label, f.family, size, inset, e.align || "center", e.valign || "middle");
+    if (e.labelSize) return layoutText(c, e.label, f.family, e.labelSize * f.scale, inset, e.align || "center", e.valign || "middle");
+    // No labelSize: grow the label with the box (42 px up to 64 px) and step down until it fits.
+    let px = Math.round(Math.max(42, Math.min(64, inset.h * 0.3, inset.w * 0.14)));
+    for (;;) {
+      const L = layoutText(c, e.label, f.family, px * f.scale, inset, e.align || "center", e.valign || "middle");
+      const fits = Math.max(...L.lines.map((l) => l.width)) <= inset.w && L.lines.length * L.lineH <= inset.h + L.size * 0.3;
+      if (fits || px <= 42) return L;
+      px -= 4;
+    }
   }
   const parent = all.find((q: any) => q.id === (e.parent || e.container));
   const f = style.font(roleOf(e));
@@ -324,7 +331,7 @@ export function textFitIssues(board: any, styleName?: string) {
       if (!L) continue;
       const widest = Math.max(...L.lines.map((l) => l.width));
       const need = L.lines.length * L.lineH;
-      if (widest > maxW + 1) issues.push({ level: "error", scene: s.id, id: e.id, rule: "text wider than box", style: style.id, detail: `${Math.round(widest)}px > ${Math.round(maxW)}px` });
+      if (widest > maxW + 1) { const chars = [...(e.type === "text" ? e.text : e.label)].length; const fit = Math.max(1, Math.floor((chars * maxW) / widest)); issues.push({ level: "error", scene: s.id, id: e.id, rule: "text wider than box", style: style.id, detail: `${Math.round(widest)}px > ${Math.round(maxW)}px; about ${fit} of ${chars} characters fit per line at this size: widen the box, shorten the text or add a space so it can wrap` }); }
       if (need > maxH + L.size * 0.3) issues.push({ level: "error", scene: s.id, id: e.id, rule: `text clipped (wraps to ${L.lines.length} lines)`, style: style.id, detail: `${Math.round(need)}px > ${Math.round(maxH)}px` });
     }
   return issues;

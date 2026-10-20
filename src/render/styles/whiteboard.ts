@@ -61,6 +61,8 @@ export function drawSequential(c: Ctx, paths: Pt[][], p: number) {
 }
 
 const pal = PALETTE as Record<string, string>;
+/** Fills one step deeper than the pastel PALETTE so colours read at thumbnail size; text stays black. */
+const FILL: Record<string, string> = { yellow: "#ffe066", blue: "#74c0fc", green: "#8ce99a", red: "#ffa8a8", grey: "#dee2e6", white: "#ffffff", black: "#495057" };
 const STROKE: Record<string, string> = { red: "#e03131", blue: "#1971c2", green: "#2f9e44", yellow: "#f08c00", grey: "#868e96" };
 
 export const whiteboard: StyleDef = {
@@ -93,7 +95,7 @@ export const whiteboard: StyleDef = {
     if (s.fill) {
       c.save();
       c.globalAlpha = 0.55 * clamp01(p * 1.4);
-      c.fillStyle = pal[s.fill] ?? pal.blue;
+      c.fillStyle = FILL[s.fill] ?? pal[s.fill] ?? FILL.blue;
       if (s.kind === "ellipse") {
         c.beginPath();
         c.ellipse(s.x + s.w / 2, s.y + s.h / 2, s.w / 2, s.h / 2, 0, 0, Math.PI * 2);
