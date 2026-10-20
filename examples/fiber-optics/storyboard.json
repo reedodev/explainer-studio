@@ -1,0 +1,893 @@
+{
+  "version": 1,
+  "title": "How does a fiber-optic cable carry light?",
+  "topic": "How does a fiber-optic cable carry light?",
+  "language": "en",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "cover": {
+    "title": "Light in a glass thread",
+    "subtitle": "How fiber optics works"
+  },
+  "stickers": [],
+  "scenes": [
+    {
+      "id": "scene-01",
+      "section": "hook",
+      "narration": "This call just crossed an ocean as light. In glass, light covers about 204,000 kilometers every second.",
+      "duration": 0,
+      "layout": "free",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "x": 120,
+          "y": 90,
+          "w": 1500,
+          "h": 110,
+          "text": "Across the ocean, inside glass",
+          "fontSize": 80,
+          "role": "title"
+        },
+        {
+          "id": "a",
+          "type": "circle",
+          "x": 140,
+          "y": 300,
+          "w": 300,
+          "h": 300,
+          "label": "Seoul",
+          "fill": "blue",
+          "labelSize": 52
+        },
+        {
+          "id": "ab",
+          "type": "arrow",
+          "from": [
+            480,
+            450
+          ],
+          "to": [
+            1420,
+            450
+          ],
+          "label": "glass fiber",
+          "bend": -70,
+          "labelSize": 44
+        },
+        {
+          "id": "b",
+          "type": "circle",
+          "x": 1460,
+          "y": 300,
+          "w": 300,
+          "h": 300,
+          "label": "L.A.",
+          "fill": "green",
+          "labelSize": 52
+        },
+        {
+          "id": "globe",
+          "type": "icon",
+          "x": 900,
+          "y": 520,
+          "w": 120,
+          "h": 120,
+          "icon": "globe"
+        },
+        {
+          "id": "speed",
+          "type": "rectangle",
+          "x": 560,
+          "y": 690,
+          "w": 800,
+          "h": 150,
+          "label": "204,000 km/s",
+          "fill": "yellow",
+          "labelSize": 72
+        },
+        {
+          "id": "hl",
+          "type": "highlight",
+          "target": "speed",
+          "style": "circle"
+        },
+        {
+          "id": "note",
+          "type": "text",
+          "x": 460,
+          "y": 860,
+          "w": 1000,
+          "h": 70,
+          "text": "speed of light / 1.468 (index of standard fiber)",
+          "fontSize": 34,
+          "role": "caption",
+          "align": "center"
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "a",
+        "ab",
+        "b",
+        "globe",
+        "speed",
+        "hl",
+        "note"
+      ]
+    },
+    {
+      "id": "scene-02",
+      "section": "structure",
+      "narration": "The light rides in a core about 8 micrometers wide. Glass cladding wraps it, then a plastic coating.",
+      "duration": 0,
+      "layout": "free",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "x": 120,
+          "y": 80,
+          "w": 1500,
+          "h": 100,
+          "text": "Thinner than a hair",
+          "fontSize": 80,
+          "role": "title"
+        },
+        {
+          "id": "coat",
+          "type": "circle",
+          "x": 160,
+          "y": 240,
+          "w": 640,
+          "h": 640,
+          "fill": "grey"
+        },
+        {
+          "id": "clad",
+          "type": "circle",
+          "x": 300,
+          "y": 380,
+          "w": 360,
+          "h": 360,
+          "fill": "blue"
+        },
+        {
+          "id": "core",
+          "type": "circle",
+          "x": 440,
+          "y": 520,
+          "w": 80,
+          "h": 80,
+          "fill": "yellow"
+        },
+        {
+          "id": "a1",
+          "type": "arrow",
+          "from": [
+            540,
+            560
+          ],
+          "to": [
+            1000,
+            330
+          ]
+        },
+        {
+          "id": "l1",
+          "type": "text",
+          "x": 1020,
+          "y": 290,
+          "w": 760,
+          "h": 80,
+          "text": "Core · 8.2 µm",
+          "fontSize": 56,
+          "role": "heading"
+        },
+        {
+          "id": "a2",
+          "type": "arrow",
+          "from": [
+            650,
+            520
+          ],
+          "to": [
+            1000,
+            520
+          ]
+        },
+        {
+          "id": "l2",
+          "type": "text",
+          "x": 1020,
+          "y": 480,
+          "w": 760,
+          "h": 80,
+          "text": "Cladding · 125 µm",
+          "fontSize": 56,
+          "role": "heading"
+        },
+        {
+          "id": "a3",
+          "type": "arrow",
+          "from": [
+            780,
+            700
+          ],
+          "to": [
+            1000,
+            710
+          ]
+        },
+        {
+          "id": "l3",
+          "type": "text",
+          "x": 1020,
+          "y": 670,
+          "w": 760,
+          "h": 80,
+          "text": "Coating · 242 µm",
+          "fontSize": 56,
+          "role": "heading"
+        },
+        {
+          "id": "hl",
+          "type": "highlight",
+          "target": "l1",
+          "style": "marker"
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "coat",
+        "clad",
+        "core",
+        "a1",
+        "l1",
+        "a2",
+        "l2",
+        "a3",
+        "l3",
+        "hl"
+      ]
+    },
+    {
+      "id": "scene-03",
+      "section": "concept",
+      "narration": "Light hits the wall at a shallow angle. Instead of escaping, it bounces back in, again and again.",
+      "duration": 0,
+      "layout": "free",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "x": 120,
+          "y": 80,
+          "w": 1500,
+          "h": 100,
+          "text": "Total internal reflection",
+          "fontSize": 80,
+          "role": "title"
+        },
+        {
+          "id": "laser",
+          "type": "rectangle",
+          "x": 80,
+          "y": 440,
+          "w": 200,
+          "h": 140,
+          "label": "laser",
+          "fill": "red",
+          "labelSize": 44
+        },
+        {
+          "id": "tube",
+          "type": "rectangle",
+          "x": 320,
+          "y": 400,
+          "w": 1440,
+          "h": 230,
+          "fill": "blue"
+        },
+        {
+          "id": "ray",
+          "type": "line",
+          "points": [
+            [
+              330,
+              600
+            ],
+            [
+              505,
+              430
+            ],
+            [
+              680,
+              600
+            ],
+            [
+              855,
+              430
+            ],
+            [
+              1030,
+              600
+            ],
+            [
+              1205,
+              430
+            ],
+            [
+              1380,
+              600
+            ],
+            [
+              1555,
+              430
+            ],
+            [
+              1730,
+              600
+            ]
+          ]
+        },
+        {
+          "id": "hb",
+          "type": "highlight",
+          "x": 655,
+          "y": 380,
+          "w": 130,
+          "h": 90,
+          "style": "circle"
+        },
+        {
+          "id": "n1",
+          "type": "text",
+          "x": 560,
+          "y": 250,
+          "w": 520,
+          "h": 70,
+          "text": "shallow angle → reflects",
+          "fontSize": 44,
+          "role": "label"
+        },
+        {
+          "id": "out",
+          "type": "arrow",
+          "from": [
+            1760,
+            515
+          ],
+          "to": [
+            1860,
+            515
+          ]
+        },
+        {
+          "id": "n2",
+          "type": "text",
+          "x": 320,
+          "y": 690,
+          "w": 1440,
+          "h": 80,
+          "text": "The cladding bends light less than the core, so the ray stays trapped.",
+          "fontSize": 40,
+          "role": "body",
+          "align": "center"
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "laser",
+        "tube",
+        "ray",
+        "hb",
+        "n1",
+        "out",
+        "n2"
+      ]
+    },
+    {
+      "id": "scene-04",
+      "section": "concept",
+      "narration": "A laser switches on and off billions of times a second. Each flash is a one, each gap is a zero.",
+      "duration": 0,
+      "layout": "free",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "x": 120,
+          "y": 80,
+          "w": 1500,
+          "h": 100,
+          "text": "Blinks become bits",
+          "fontSize": 80,
+          "role": "title"
+        },
+        {
+          "id": "laser",
+          "type": "rectangle",
+          "x": 100,
+          "y": 360,
+          "w": 260,
+          "h": 180,
+          "label": "laser",
+          "fill": "red",
+          "labelSize": 48
+        },
+        {
+          "id": "a1",
+          "type": "arrow",
+          "from": [
+            380,
+            450
+          ],
+          "to": [
+            520,
+            450
+          ]
+        },
+        {
+          "id": "b1",
+          "type": "rectangle",
+          "x": 540,
+          "y": 380,
+          "w": 140,
+          "h": 140,
+          "label": "1",
+          "fill": "yellow",
+          "labelSize": 64
+        },
+        {
+          "id": "b2",
+          "type": "rectangle",
+          "x": 700,
+          "y": 380,
+          "w": 140,
+          "h": 140,
+          "label": "0",
+          "fill": "grey",
+          "labelSize": 64
+        },
+        {
+          "id": "b3",
+          "type": "rectangle",
+          "x": 860,
+          "y": 380,
+          "w": 140,
+          "h": 140,
+          "label": "1",
+          "fill": "yellow",
+          "labelSize": 64
+        },
+        {
+          "id": "b4",
+          "type": "rectangle",
+          "x": 1020,
+          "y": 380,
+          "w": 140,
+          "h": 140,
+          "label": "1",
+          "fill": "yellow",
+          "labelSize": 64
+        },
+        {
+          "id": "b5",
+          "type": "rectangle",
+          "x": 1180,
+          "y": 380,
+          "w": 140,
+          "h": 140,
+          "label": "0",
+          "fill": "grey",
+          "labelSize": 64
+        },
+        {
+          "id": "a2",
+          "type": "arrow",
+          "from": [
+            1340,
+            450
+          ],
+          "to": [
+            1460,
+            450
+          ]
+        },
+        {
+          "id": "det",
+          "type": "rectangle",
+          "x": 1480,
+          "y": 360,
+          "w": 300,
+          "h": 180,
+          "label": "detector",
+          "fill": "green",
+          "labelSize": 44
+        },
+        {
+          "id": "cap",
+          "type": "text",
+          "x": 540,
+          "y": 600,
+          "w": 780,
+          "h": 70,
+          "text": "light on = 1 · light off = 0",
+          "fontSize": 48,
+          "role": "label",
+          "align": "center"
+        },
+        {
+          "id": "chat",
+          "type": "icon",
+          "x": 1570,
+          "y": 600,
+          "w": 120,
+          "h": 120,
+          "icon": "chat"
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "laser",
+        "a1",
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5",
+        "a2",
+        "det",
+        "cap",
+        "chat"
+      ]
+    },
+    {
+      "id": "scene-05",
+      "section": "example",
+      "narration": "Glass still absorbs a little light, so the color matters. At 1550 nanometers, standard fiber loses only about 0.2 decibels per kilometer.",
+      "duration": 0,
+      "layout": "free",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "x": 120,
+          "y": 70,
+          "w": 1500,
+          "h": 100,
+          "text": "Pick the color glass barely absorbs",
+          "fontSize": 72,
+          "role": "title"
+        },
+        {
+          "id": "chart",
+          "type": "chart",
+          "chartType": "bar",
+          "x": 140,
+          "y": 230,
+          "w": 1000,
+          "h": 580,
+          "data": [
+            {
+              "label": "850 nm · 1.81",
+              "value": 1.81,
+              "color": "red"
+            },
+            {
+              "label": "1310 nm · 0.34",
+              "value": 0.34,
+              "color": "blue"
+            },
+            {
+              "label": "1550 nm · 0.19",
+              "value": 0.19,
+              "color": "green"
+            }
+          ]
+        },
+        {
+          "id": "call",
+          "type": "rectangle",
+          "x": 1240,
+          "y": 300,
+          "w": 560,
+          "h": 260,
+          "label": "1550 nm: after 50 km about 11% of the light is left",
+          "fill": "yellow",
+          "labelSize": 40
+        },
+        {
+          "id": "ar",
+          "type": "arrow",
+          "from": [
+            1240,
+            560
+          ],
+          "to": [
+            1010,
+            700
+          ]
+        },
+        {
+          "id": "src",
+          "type": "text",
+          "x": 140,
+          "y": 880,
+          "w": 1300,
+          "h": 50,
+          "text": "dB lost per km · typical values, Corning SMF-28 datasheet",
+          "fontSize": 30,
+          "role": "caption"
+        },
+        {
+          "id": "hb",
+          "type": "highlight",
+          "x": 790,
+          "y": 660,
+          "w": 300,
+          "h": 190,
+          "style": "circle"
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "chart",
+        "call",
+        "ar",
+        "src",
+        "hb"
+      ],
+      "subtitle": "Glass still absorbs a little light, so the color matters. At 1550 nm, standard fiber loses only about 0.2 dB per km."
+    },
+    {
+      "id": "scene-06",
+      "section": "example",
+      "narration": "In 1988, TAT-8 became the first fiber cable across an ocean. It carried about forty thousand calls at once.",
+      "duration": 0,
+      "layout": "free",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "x": 120,
+          "y": 80,
+          "w": 1500,
+          "h": 100,
+          "text": "1988: the first ocean of glass",
+          "fontSize": 80,
+          "role": "title"
+        },
+        {
+          "id": "us",
+          "type": "circle",
+          "x": 120,
+          "y": 280,
+          "w": 260,
+          "h": 260,
+          "label": "New Jersey",
+          "fill": "blue",
+          "labelSize": 40
+        },
+        {
+          "id": "cable",
+          "type": "arrow",
+          "from": [
+            400,
+            410
+          ],
+          "to": [
+            1500,
+            410
+          ],
+          "label": "TAT-8 · about 6,000 km",
+          "bend": 80,
+          "labelSize": 42
+        },
+        {
+          "id": "eu",
+          "type": "circle",
+          "x": 1520,
+          "y": 280,
+          "w": 260,
+          "h": 260,
+          "label": "UK · France",
+          "fill": "green",
+          "labelSize": 40
+        },
+        {
+          "id": "f1",
+          "type": "rectangle",
+          "x": 160,
+          "y": 640,
+          "w": 480,
+          "h": 160,
+          "label": "280 Mbit/s per fiber pair",
+          "fill": "grey",
+          "labelSize": 40
+        },
+        {
+          "id": "f2",
+          "type": "rectangle",
+          "x": 720,
+          "y": 640,
+          "w": 480,
+          "h": 160,
+          "label": "about 40,000 calls at once",
+          "fill": "yellow",
+          "labelSize": 40
+        },
+        {
+          "id": "f3",
+          "type": "rectangle",
+          "x": 1280,
+          "y": 640,
+          "w": 480,
+          "h": 160,
+          "label": "in service 1988 to 2002",
+          "fill": "grey",
+          "labelSize": 40
+        },
+        {
+          "id": "hl",
+          "type": "highlight",
+          "target": "f2",
+          "style": "circle"
+        },
+        {
+          "id": "clock",
+          "type": "icon",
+          "x": 900,
+          "y": 480,
+          "w": 110,
+          "h": 110,
+          "icon": "clock"
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "us",
+        "cable",
+        "eu",
+        "f1",
+        "f2",
+        "f3",
+        "hl",
+        "clock"
+      ],
+      "subtitle": "In 1988, TAT-8 became the first fiber cable across an ocean. It carried about 40,000 calls at once."
+    },
+    {
+      "id": "scene-07",
+      "section": "summary",
+      "narration": "So the trick is simple. Trap light in glass, blink it fast, and pick a color the glass barely absorbs.",
+      "duration": 0,
+      "layout": "free",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "x": 120,
+          "y": 80,
+          "w": 1500,
+          "h": 100,
+          "text": "Across the ocean, inside glass",
+          "fontSize": 80,
+          "role": "title"
+        },
+        {
+          "id": "a",
+          "type": "circle",
+          "x": 140,
+          "y": 240,
+          "w": 240,
+          "h": 240,
+          "label": "Seoul",
+          "fill": "blue",
+          "labelSize": 46
+        },
+        {
+          "id": "ab",
+          "type": "arrow",
+          "from": [
+            410,
+            360
+          ],
+          "to": [
+            1500,
+            360
+          ],
+          "label": "glass fiber",
+          "bend": -60,
+          "labelSize": 42
+        },
+        {
+          "id": "b",
+          "type": "circle",
+          "x": 1530,
+          "y": 240,
+          "w": 240,
+          "h": 240,
+          "label": "L.A.",
+          "fill": "green",
+          "labelSize": 46
+        },
+        {
+          "id": "s1",
+          "type": "rectangle",
+          "x": 140,
+          "y": 600,
+          "w": 500,
+          "h": 170,
+          "label": "1 · trap light in the core",
+          "fill": "blue",
+          "labelSize": 40
+        },
+        {
+          "id": "s2",
+          "type": "rectangle",
+          "x": 710,
+          "y": 600,
+          "w": 500,
+          "h": 170,
+          "label": "2 · blink it into bits",
+          "fill": "yellow",
+          "labelSize": 40
+        },
+        {
+          "id": "s3",
+          "type": "rectangle",
+          "x": 1280,
+          "y": 600,
+          "w": 500,
+          "h": 170,
+          "label": "3 · use 1550 nm",
+          "fill": "green",
+          "labelSize": 40
+        },
+        {
+          "id": "ok1",
+          "type": "icon",
+          "x": 350,
+          "y": 800,
+          "w": 80,
+          "h": 80,
+          "icon": "check"
+        },
+        {
+          "id": "ok2",
+          "type": "icon",
+          "x": 920,
+          "y": 800,
+          "w": 80,
+          "h": 80,
+          "icon": "check"
+        },
+        {
+          "id": "ok3",
+          "type": "icon",
+          "x": 1490,
+          "y": 800,
+          "w": 80,
+          "h": 80,
+          "icon": "check"
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "a",
+        "ab",
+        "b",
+        "s1",
+        "s2",
+        "s3",
+        "ok1",
+        "ok2",
+        "ok3"
+      ]
+    }
+  ]
+}

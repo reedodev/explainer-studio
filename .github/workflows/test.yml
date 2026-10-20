@@ -1,0 +1,26 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install FFmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - run: npm ci
+      - run: npm test
+      - name: Silent render of the example (all checks + 8 styles styleframes)
+        run: |
+          mkdir -p /tmp/demo && cp examples/fiber-optics/storyboard.json /tmp/demo/
+          npm run es -- build /tmp/demo --tts silent
+          npm run es -- styleframes /tmp/demo --styles all --scenes 1,3
+          ffprobe -v error -show_entries format=duration -of csv=p=0 /tmp/demo/final.mp4

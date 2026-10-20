@@ -1,0 +1,33 @@
+{
+  "name": "explainer-studio",
+  "version": "1.0.0",
+  "description": "One storyboard, eight hand-made visual styles: deterministic narrated explainer videos with captions, no GPU and no video model.",
+  "main": null,
+  "scripts": {
+    "es": "node node_modules/tsx/dist/cli.mjs src/cli.ts",
+    "test": "node node_modules/tsx/dist/cli.mjs tests/validation.test.ts",
+    "demo": "node tools/demo-grid.mjs"
+  },
+  "keywords": [
+    "explainer-video",
+    "whiteboard-animation",
+    "claude-code",
+    "agent-skills",
+    "ffmpeg",
+    "canvas"
+  ],
+  "author": "Reedo",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.9",
+    "msedge-tts": "^2.0.8",
+    "roughjs": "^4.6.6",
+    "zod": "^4.6.5"
+  }
+}

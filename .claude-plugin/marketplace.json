@@ -1,0 +1,21 @@
+{
+  "name": "explainer-studio",
+  "owner": {
+    "name": "Reedo"
+  },
+  "metadata": {
+    "description": "One line to a narrated, captioned explainer video in eight hand-drawn styles. Deterministic, no GPU, no video model.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "explainer-studio",
+      "description": "One line to a narrated, captioned explainer video in eight hand-drawn styles. Deterministic, no GPU, no video model.",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/explainer-studio"
+      ]
+    }
+  ]
+}

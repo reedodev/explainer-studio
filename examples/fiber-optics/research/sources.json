@@ -1,0 +1,46 @@
+{
+  "topic": "How does a fiber-optic cable carry light?",
+  "checked_at": "2026-10-20",
+  "claims": [
+    {
+      "id": "speed",
+      "claim": "Effective group index of standard single-mode fiber is about 1.468 at 1550 nm, so light travels at c/1.468 ≈ 204,000 km/s.",
+      "source": "Corning SMF-28e+ product information (PI-1463)",
+      "url": "https://www.corning.com/media/worldwide/coc/documents/Fiber/product-information-sheets/PI-1463-AEN.pdf",
+      "status": "verified",
+      "checked_at": "2026-10-20"
+    },
+    {
+      "id": "geometry",
+      "claim": "Core diameter 8.2 µm, cladding 125 µm, coating 242 µm.",
+      "source": "Corning SMF-28e+ product information (PI-1463)",
+      "url": "https://www.corning.com/media/worldwide/coc/documents/Fiber/product-information-sheets/PI-1463-AEN.pdf",
+      "status": "verified",
+      "checked_at": "2026-10-20"
+    },
+    {
+      "id": "loss",
+      "claim": "Typical spectral attenuation: 850 nm 1.81, 1310 nm 0.34, 1550 nm 0.19 dB/km. After 50 km at 0.19 dB/km, 10^(-0.95) ≈ 11% of the power remains (derived).",
+      "source": "Corning SMF-28 CPC6 datasheet (typical fiber)",
+      "url": "https://docenti.ing.unipi.it/m.luise/ComTech/Corning_SMF28.pdf",
+      "status": "verified",
+      "checked_at": "2026-10-20"
+    },
+    {
+      "id": "tat8",
+      "claim": "TAT-8 went into service 14 Dec 1988 as the first fiber-optic cable across an ocean, about 6,000 km, 280 Mbit/s per fiber pair, retired 2002.",
+      "source": "Submarine Networks, TAT-8 article",
+      "url": "https://www.submarinenetworks.com/en/nv/insights/recovery-of-the-world-s-first-fiber-optic-submarine-cable-across-an-ocean-tat-8",
+      "status": "verified",
+      "checked_at": "2026-10-20"
+    },
+    {
+      "id": "calls",
+      "claim": "TAT-8 carried about 40,000 simultaneous voice circuits.",
+      "source": "element14 Community, TAT-8 article",
+      "url": "https://community.element14.com/technologies/sensor-technology/b/blog/posts/transatlantic-tat-8-fiber-optic-cable-is-being-removed-from-the-seabed",
+      "status": "verified",
+      "checked_at": "2026-10-20"
+    }
+  ]
+}

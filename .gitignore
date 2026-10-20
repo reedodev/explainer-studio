@@ -1,0 +1,12 @@
+node_modules/
+output/
+*.log
+.env
+.env.local
+*.raw.flac
+.cache/
+brain-site/
+examples/*/*
+!examples/*/storyboard.json
+!examples/*/research/
+

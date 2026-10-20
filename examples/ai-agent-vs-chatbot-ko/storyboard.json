@@ -1,0 +1,598 @@
+{
+  "version": 1,
+  "title": "AI 에이전트와 챗봇은 무엇이 다를까",
+  "topic": "AI 에이전트와 챗봇은 무엇이 다를까",
+  "language": "ko",
+  "canvas": {
+    "width": 1920,
+    "height": 1080
+  },
+  "cover": {
+    "title": "챗봇은 답하고, 에이전트는 끝낸다",
+    "subtitle": "AI 에이전트와 챗봇의 차이"
+  },
+  "stickers": [],
+  "scenes": [
+    {
+      "id": "scene-01",
+      "section": "hook",
+      "narration": "같은 부탁을 해도 챗봇은 방법을 알려 주고, 에이전트는 일을 끝내 놓습니다.",
+      "duration": 0,
+      "layout": "free",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "x": 120,
+          "y": 80,
+          "w": 1500,
+          "h": 110,
+          "text": "답하는 AI, 끝내는 AI",
+          "fontSize": 84,
+          "role": "title"
+        },
+        {
+          "id": "ask",
+          "type": "rectangle",
+          "x": 660,
+          "y": 250,
+          "w": 600,
+          "h": 130,
+          "label": "\"회의록 정리해서 보내 줘\"",
+          "fill": "yellow",
+          "labelSize": 44
+        },
+        {
+          "id": "a1",
+          "type": "arrow",
+          "from": [
+            800,
+            370
+          ],
+          "to": [
+            480,
+            520
+          ]
+        },
+        {
+          "id": "a2",
+          "type": "arrow",
+          "from": [
+            1120,
+            370
+          ],
+          "to": [
+            1440,
+            520
+          ]
+        },
+        {
+          "id": "bot",
+          "type": "rectangle",
+          "x": 160,
+          "y": 540,
+          "w": 640,
+          "h": 220,
+          "label": "챗봇: \"이렇게 하시면 됩니다\"",
+          "fill": "grey",
+          "labelSize": 44
+        },
+        {
+          "id": "agent",
+          "type": "rectangle",
+          "x": 1120,
+          "y": 540,
+          "w": 640,
+          "h": 220,
+          "label": "에이전트: 정리하고 보냈습니다",
+          "fill": "green",
+          "labelSize": 44
+        },
+        {
+          "id": "ichat",
+          "type": "icon",
+          "x": 420,
+          "y": 790,
+          "w": 110,
+          "h": 110,
+          "icon": "chat"
+        },
+        {
+          "id": "icheck",
+          "type": "icon",
+          "x": 1380,
+          "y": 790,
+          "w": 110,
+          "h": 110,
+          "icon": "check"
+        },
+        {
+          "id": "hl",
+          "type": "highlight",
+          "target": "agent",
+          "style": "circle"
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "ask",
+        "a1",
+        "a2",
+        "bot",
+        "agent",
+        "ichat",
+        "icheck",
+        "hl"
+      ],
+      "subtitle": "같은 부탁을 해도 챗봇은 방법을 알려 주고, 에이전트는 일을 끝내 놓습니다."
+    },
+    {
+      "id": "scene-02",
+      "section": "concept",
+      "narration": "챗봇은 질문을 받고 답을 한 번 돌려주면 일이 끝납니다. 다음 행동은 사람이 직접 합니다.",
+      "duration": 0,
+      "layout": "free",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "x": 120,
+          "y": 80,
+          "w": 1500,
+          "h": 100,
+          "text": "챗봇: 한 번 묻고 한 번 답한다",
+          "fontSize": 76,
+          "role": "title"
+        },
+        {
+          "id": "q",
+          "type": "rectangle",
+          "x": 160,
+          "y": 360,
+          "w": 420,
+          "h": 200,
+          "label": "질문",
+          "fill": "yellow",
+          "labelSize": 60
+        },
+        {
+          "id": "qa",
+          "type": "arrow",
+          "from": [
+            600,
+            460
+          ],
+          "to": [
+            760,
+            460
+          ]
+        },
+        {
+          "id": "robot",
+          "type": "icon",
+          "x": 780,
+          "y": 380,
+          "w": 160,
+          "h": 160,
+          "icon": "robot"
+        },
+        {
+          "id": "ar",
+          "type": "arrow",
+          "from": [
+            960,
+            460
+          ],
+          "to": [
+            1120,
+            460
+          ]
+        },
+        {
+          "id": "ans",
+          "type": "rectangle",
+          "x": 1140,
+          "y": 360,
+          "w": 420,
+          "h": 200,
+          "label": "답변",
+          "fill": "blue",
+          "labelSize": 60
+        },
+        {
+          "id": "note",
+          "type": "text",
+          "x": 160,
+          "y": 660,
+          "w": 1600,
+          "h": 80,
+          "text": "다음 행동(파일 열기·보내기)은 사람의 몫입니다",
+          "fontSize": 48,
+          "role": "body",
+          "align": "center"
+        },
+        {
+          "id": "hl",
+          "type": "highlight",
+          "target": "note",
+          "style": "underline"
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "q",
+        "qa",
+        "robot",
+        "ar",
+        "ans",
+        "note",
+        "hl"
+      ]
+    },
+    {
+      "id": "scene-03",
+      "section": "concept",
+      "narration": "에이전트는 목표를 받으면 계획하고, 도구를 쓰고, 결과를 확인하는 고리를 스스로 돕니다.",
+      "duration": 0,
+      "layout": "free",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "x": 120,
+          "y": 80,
+          "w": 1500,
+          "h": 100,
+          "text": "에이전트: 계획하고 실행하고 확인한다",
+          "fontSize": 72,
+          "role": "title"
+        },
+        {
+          "id": "goal",
+          "type": "rectangle",
+          "x": 120,
+          "y": 420,
+          "w": 300,
+          "h": 180,
+          "label": "목표",
+          "fill": "yellow",
+          "labelSize": 56
+        },
+        {
+          "id": "g1",
+          "type": "arrow",
+          "from": [
+            440,
+            510
+          ],
+          "to": [
+            580,
+            510
+          ]
+        },
+        {
+          "id": "plan",
+          "type": "circle",
+          "x": 600,
+          "y": 260,
+          "w": 260,
+          "h": 260,
+          "label": "계획",
+          "fill": "blue",
+          "labelSize": 52
+        },
+        {
+          "id": "act",
+          "type": "circle",
+          "x": 1000,
+          "y": 520,
+          "w": 260,
+          "h": 260,
+          "label": "실행",
+          "fill": "green",
+          "labelSize": 52
+        },
+        {
+          "id": "check",
+          "type": "circle",
+          "x": 1400,
+          "y": 260,
+          "w": 260,
+          "h": 260,
+          "label": "확인",
+          "fill": "red",
+          "labelSize": 52
+        },
+        {
+          "id": "l1",
+          "type": "arrow",
+          "from": [
+            840,
+            470
+          ],
+          "to": [
+            1020,
+            580
+          ],
+          "bend": -30
+        },
+        {
+          "id": "l2",
+          "type": "arrow",
+          "from": [
+            1240,
+            580
+          ],
+          "to": [
+            1420,
+            470
+          ],
+          "bend": -30
+        },
+        {
+          "id": "l3",
+          "type": "arrow",
+          "from": [
+            1400,
+            340
+          ],
+          "to": [
+            860,
+            340
+          ],
+          "label": "다시",
+          "bend": 60,
+          "labelSize": 40
+        },
+        {
+          "id": "loop",
+          "type": "icon",
+          "x": 1060,
+          "y": 330,
+          "w": 140,
+          "h": 140,
+          "icon": "loop"
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "goal",
+        "g1",
+        "plan",
+        "act",
+        "check",
+        "l1",
+        "l2",
+        "l3",
+        "loop"
+      ]
+    },
+    {
+      "id": "scene-04",
+      "section": "example",
+      "narration": "예를 들어 회의록을 부탁하면 녹음을 받아 적고, 요약하고, 메일로 보낸 뒤 잘 갔는지까지 봅니다.",
+      "duration": 0,
+      "layout": "free",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "x": 120,
+          "y": 80,
+          "w": 1500,
+          "h": 100,
+          "text": "회의록 하나에 도구 네 번",
+          "fontSize": 76,
+          "role": "title"
+        },
+        {
+          "id": "s1",
+          "type": "rectangle",
+          "x": 120,
+          "y": 300,
+          "w": 380,
+          "h": 180,
+          "label": "1 받아 적기",
+          "fill": "blue",
+          "labelSize": 48
+        },
+        {
+          "id": "s2",
+          "type": "rectangle",
+          "x": 560,
+          "y": 300,
+          "w": 380,
+          "h": 180,
+          "label": "2 요약하기",
+          "fill": "blue",
+          "labelSize": 48
+        },
+        {
+          "id": "s3",
+          "type": "rectangle",
+          "x": 1000,
+          "y": 300,
+          "w": 380,
+          "h": 180,
+          "label": "3 메일 보내기",
+          "fill": "yellow",
+          "labelSize": 48
+        },
+        {
+          "id": "s4",
+          "type": "rectangle",
+          "x": 1440,
+          "y": 300,
+          "w": 380,
+          "h": 180,
+          "label": "4 도착 확인",
+          "fill": "green",
+          "labelSize": 48
+        },
+        {
+          "id": "x1",
+          "type": "arrow",
+          "from": [
+            500,
+            390
+          ],
+          "to": [
+            560,
+            390
+          ]
+        },
+        {
+          "id": "x2",
+          "type": "arrow",
+          "from": [
+            940,
+            390
+          ],
+          "to": [
+            1000,
+            390
+          ]
+        },
+        {
+          "id": "x3",
+          "type": "arrow",
+          "from": [
+            1380,
+            390
+          ],
+          "to": [
+            1440,
+            390
+          ]
+        },
+        {
+          "id": "doc",
+          "type": "icon",
+          "x": 260,
+          "y": 560,
+          "w": 110,
+          "h": 110,
+          "icon": "document"
+        },
+        {
+          "id": "bell",
+          "type": "icon",
+          "x": 1150,
+          "y": 560,
+          "w": 110,
+          "h": 110,
+          "icon": "bell"
+        },
+        {
+          "id": "ok",
+          "type": "icon",
+          "x": 1580,
+          "y": 560,
+          "w": 110,
+          "h": 110,
+          "icon": "check"
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "s1",
+        "s2",
+        "s3",
+        "s4",
+        "x1",
+        "x2",
+        "x3",
+        "doc",
+        "bell",
+        "ok"
+      ]
+    },
+    {
+      "id": "scene-05",
+      "section": "limits",
+      "narration": "그래서 에이전트에게는 할 수 있는 일의 범위와, 사람이 꼭 확인할 지점을 함께 정해 줘야 합니다.",
+      "duration": 0,
+      "layout": "free",
+      "elements": [
+        {
+          "id": "title",
+          "type": "text",
+          "x": 120,
+          "y": 80,
+          "w": 1500,
+          "h": 100,
+          "text": "맡기기 전에 정할 두 가지",
+          "fontSize": 76,
+          "role": "title"
+        },
+        {
+          "id": "scope",
+          "type": "rectangle",
+          "x": 160,
+          "y": 300,
+          "w": 740,
+          "h": 300,
+          "label": "범위: 써도 되는 도구와 계정",
+          "fill": "blue",
+          "labelSize": 46
+        },
+        {
+          "id": "gate",
+          "type": "rectangle",
+          "x": 1020,
+          "y": 300,
+          "w": 740,
+          "h": 300,
+          "label": "관문: 보내기 전 사람이 확인",
+          "fill": "yellow",
+          "labelSize": 46
+        },
+        {
+          "id": "lock",
+          "type": "icon",
+          "x": 470,
+          "y": 640,
+          "w": 120,
+          "h": 120,
+          "icon": "lock"
+        },
+        {
+          "id": "warn",
+          "type": "icon",
+          "x": 1330,
+          "y": 640,
+          "w": 120,
+          "h": 120,
+          "icon": "warning"
+        },
+        {
+          "id": "hl",
+          "type": "highlight",
+          "target": "gate",
+          "style": "circle"
+        },
+        {
+          "id": "end",
+          "type": "text",
+          "x": 160,
+          "y": 820,
+          "w": 1600,
+          "h": 80,
+          "text": "챗봇은 답하고, 에이전트는 끝냅니다",
+          "fontSize": 56,
+          "role": "heading",
+          "align": "center"
+        }
+      ],
+      "drawOrder": [
+        "title",
+        "scope",
+        "gate",
+        "lock",
+        "warn",
+        "hl",
+        "end"
+      ]
+    }
+  ]
+}
