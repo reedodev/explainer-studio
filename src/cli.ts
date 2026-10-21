@@ -81,9 +81,13 @@ function template(topic: string, style: string) {
 /** On-screen subtitles use scene.subtitle when present (display spelling such as "오퍼스 5.5"); TTS always reads scene.narration. */
 const shownBoard = (b: any) => ({ ...b, scenes: b.scenes.map((s: any) => (s.subtitle ? { ...s, narration: s.subtitle } : s)) });
 
-/** generate -> validate -> fix -> validate, for one style. */
+/**
+ * generate -> validate -> fix -> validate. Text is measured with the real font of EVERY style (not only the one being rendered),
+ * so a label that fits whiteboard but not spy-titles is caught at build time and the failing style is named.
+ */
 function validate(b: any, dir: string, style: string) {
-  return validateBoard(b, dir, makeSubtitles(shownBoard(b))).concat(textFitIssues(b, style));
+  const fit = [style, ...Object.keys(STYLES).filter((k) => k !== style)].flatMap((k) => textFitIssues(b, k));
+  return validateBoard(b, dir, makeSubtitles(shownBoard(b))).concat(fit);
 }
 function fixGeometry(b: any) {
   for (const s of b.scenes)
@@ -98,12 +102,17 @@ function fixGeometry(b: any) {
 /** Shrink text that does not fit with this style's real font (never below 28px). */
 function fixTextFit(b: any, issues: any[]) {
   let changed = 0;
+  const done = new Set<string>(); // one shrink step per element per round, however many styles flagged it
   for (const is of issues.filter((x) => /text (wider|clipped)/.test(x.rule))) {
+    const key = is.scene + "/" + is.id;
+    if (done.has(key)) continue;
+    done.add(key);
     const s = b.scenes.find((q: any) => q.id === is.scene);
     const e = s?.elements.find((q: any) => q.id === is.id);
     if (!e) continue;
-    if (e.type === "text" && e.fontSize > 28) { e.fontSize = Math.max(28, Math.floor(e.fontSize * 0.92)); changed++; }
-    else if (e.label && (e.labelSize || 42) > 28) { e.labelSize = Math.max(28, Math.floor((e.labelSize || 42) * 0.92)); changed++; }
+    const size = e.fontSize || 52;
+    if (e.type === "text" && size > 28) { e.fontSize = Math.max(28, Math.floor(size * 0.92)); changed++; }
+    else if (e.label && e.labelSize > 28) { e.labelSize = Math.max(28, Math.floor(e.labelSize * 0.92)); changed++; } // labels without labelSize already auto-shrink to the floor
   }
   return changed;
 }
@@ -114,9 +123,11 @@ function summary(list: any[], head: string) {
   const line = (x: any) => `  ${x.level === "error" ? "ERROR" : "warn "} ${x.scene ?? ""}${x.id ? " / " + x.id : ""}: ${x.rule}${x.detail ? " (" + x.detail + ")" : ""}`;
   const listed = list.filter((x) => x.level === "error" || x.level === "warning");
   const info = list.filter((x) => x.level === "info");
-  const expected = info.reduce((n, x) => n + (parseInt(x.detail, 10) || 0), 0);
+  const expected = info.reduce((n, x) => n + (x.count || 0), 0);
+  const items = info.flatMap((x) => (x.items || []).map((i: string) => `${x.scene}: ${i}`));
+  const counted = items.length ? `\n  intended overlaps counted (not warnings): ${items.slice(0, 8).join("; ")}${items.length > 8 ? `; +${items.length - 8} more` : ""}` : "";
   const shown = [...listed.filter((x) => x.level === "error"), ...listed.filter((x) => x.level !== "error")].slice(0, 25);
-  return [`${head}`, `${e} error(s), ${w} warning(s)` + (expected ? `, ${expected} intended overlap(s) not listed (arrows touching their shapes, nested shapes, dots on a line)` : ""), ...shown.map(line), listed.length > shown.length ? `  ... ${listed.length - shown.length} more in validation-report.md` : ""].filter(Boolean).join("\n");
+  return [`${head}`, `${e} error(s), ${w} warning(s)` + (expected ? `, ${expected} intended overlap(s) not listed as warnings` : "") + counted + `\n  text fit checked in all ${Object.keys(STYLES).length} styles`, ...shown.map(line), listed.length > shown.length ? `  ... ${listed.length - shown.length} more in validation-report.md` : ""].filter(Boolean).join("\n");
 }
 
 /** Output locations for a style: the main project folder, or variants/<style>/. */
@@ -282,7 +293,7 @@ async function main() {
   const before = validate(b, pp.dir, style);
   fixGeometry(b);
   let after = validate(b, pp.dir, style);
-  for (let round = 0; round < 6 && fixTextFit(b, after); round++) after = validate(b, pp.dir, style);
+  for (let round = 0; round < 8 && fixTextFit(b, after); round++) after = validate(b, pp.dir, style);
   time(b);
   after = validate(b, pp.dir, style);
   saveJson(pp.storyboard, b);

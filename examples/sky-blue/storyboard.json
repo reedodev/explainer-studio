@@ -329,12 +329,6 @@
           "toTarget": "chart:blue 450 nm"
         },
         {
-          "id": "hl",
-          "type": "highlight",
-          "style": "circle",
-          "target": "chart:blue 450 nm+labels"
-        },
-        {
           "id": "mol",
           "type": "icon",
           "icon": "gear",
@@ -360,7 +354,6 @@
         "chart",
         "call",
         "ar",
-        "hl",
         "mol",
         "src"
       ]

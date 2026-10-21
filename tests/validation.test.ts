@@ -179,6 +179,30 @@ count++;console.log('PASS style aliases resolve and unknown styles are rejected'
   assert(!tr.some((i:any)=>i.rule==='overlap')&&tr.some((i:any)=>i.level==='info'&&i.rule==='expected overlaps'),'an arrow ending inside its shape is counted, not listed');
   count++;console.log('PASS chart bar geometry, bar/arrow targets and overlap verdicts');
 }
+// ---- fork H: every-style text fit, circle labels, drawOrder detail, intended-overlap list, wider chart bars
+{
+  const {textFitIssues}=await import('../src/render/engine.js');
+  const {STYLES:ST}=await import('../src/render/styles/index.js');
+  const {chartLayout}=await import('../src/storyboard/schema.js');
+  const mk=(label:string,w=260,extra:any={})=>({style:'whiteboard',scenes:[{id:'s',duration:5,narration:'x.',drawOrder:['c'],elements:[{id:'c',type:'circle',x:400,y:300,w,h:w,fill:'blue',label,...extra}]}]});
+  const fitAll=(b:any)=>Object.keys(ST).flatMap(k=>textFitIssues(b,k));
+  assert(!fitAll(mk('Evaporation')).some((i:any)=>i.id==='c'),'a circle label auto-shrinks to fit every style');
+  const wide=fitAll(mk('Condensation'));
+  assert(wide.some((i:any)=>i.style==='spy-titles'&&/spy-titles/.test(i.detail)&&/characters fit/.test(i.detail)),'an overflow that cannot be shrunk away names the failing style and the characters that fit: '+JSON.stringify(wide));
+  assert(fitAll(mk('Condensation',320)).length===0,'a bigger circle fits the same word in every style');
+  count++;console.log('PASS circle labels auto-shrink; unfixable overflow names the style and max characters; fit is measured in all styles');
+  const dob:any={scenes:[{id:'d',duration:5,narration:'x.',drawOrder:['a','zz'],elements:[{id:'a',type:'rectangle',x:100,y:200,w:200,h:200},{id:'b',type:'rectangle',x:600,y:200,w:200,h:200}]}]};
+  const dr=validateBoard(dob).find((i:any)=>i.rule==='invalid drawOrder');
+  assert(dr&&/missing from drawOrder: b/.test(dr.detail)&&/unknown ids in drawOrder: zz/.test(dr.detail),'invalid drawOrder names the ids: '+JSON.stringify(dr));
+  count++;console.log('PASS invalid drawOrder names the missing and unknown ids');
+  const ob:any={scenes:[{id:'o',duration:5,narration:'x.',drawOrder:['r','ar','h'],elements:[{id:'r',type:'rectangle',x:400,y:300,w:300,h:200,fill:'blue'},{id:'ar',type:'arrow',from:[100,400],to:[430,400]},{id:'h',type:'highlight',target:'r',style:'circle'}]}]};
+  const exp=validateBoard(ob).find((i:any)=>i.level==='info'&&i.rule==='expected overlaps');
+  assert(exp&&exp.count===2&&exp.items.some((x:string)=>/ar arrow touches its shape r/.test(x))&&exp.items.some((x:string)=>/h highlight on r/.test(x)),'the intended-overlap line lists what was counted: '+JSON.stringify(exp));
+  count++;console.log('PASS intended overlaps list what was counted, including highlights on their targets');
+  const cl=chartLayout({x:100,y:200,w:1200,h:600,data:[{label:'a',value:97},{label:'b',value:2},{label:'c',value:1}]});
+  assert(Math.abs(cl.bars[0].w-320)<1e-6&&cl.bars[2].h>=cl.plotH*0.12-1e-6,'few bars are wide (80% of the slot) and the smallest bar stays visible');
+  count++;console.log('PASS chart with few bars uses wide bars and keeps tiny values visible');
+}
 console.log(count+' tests passed; 0 failed.');
 
 

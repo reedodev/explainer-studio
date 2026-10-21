@@ -239,11 +239,11 @@ export function elementBox(el: Element, all?: Element[]): Box | null {
 
 
 /** Bar geometry of a chart (shared by drawing, highlight/arrow targets and validation). */
-export const CHART_LABEL_H = 64; // category label strip under the bars (34 px text)
-export const CHART_VALUE_H = 50; // value label above the tallest bar (34 px text)
+export const CHART_LABEL_H = 68; // category label strip under the bars (>= 34 px text)
+export const CHART_VALUE_H = 58; // value label above the tallest bar (>= 38 px text)
 export type ChartBar = { label: string; value: number; color?: string; x: number; y: number; w: number; h: number; slotX: number; slotW: number };
 export function chartLayout(el: { x: number; y: number; w: number; h: number; data: { label: string; value: number; color?: string }[] }): { bars: ChartBar[]; baseY: number; plotH: number } {
-  const n = el.data.length, slot = el.w / n, bw = slot * 0.65;
+  const n = el.data.length, slot = el.w / n, bw = slot * (n <= 4 ? 0.8 : 0.72); // few bars: wide, tightly spaced
   const baseY = el.y + el.h - CHART_LABEL_H, plotH = Math.max(40, el.h - CHART_LABEL_H - CHART_VALUE_H);
   const max = Math.max(...el.data.map((d) => d.value), 1e-9);
   // A bar never gets thinner than 12 % of the plot, so 4 vs 60 is still a visible bar (the value label tells the truth).
@@ -271,7 +271,7 @@ export function targetBox(target: string, all: Element[]): Box | null {
   const bar = /^\d+$/.test(key) ? bars[Number(key)] : bars.find((b) => b.label.toLowerCase() === key.toLowerCase());
   if (!bar) return null;
   // 10 % wider than the slot, so a circle around it clears the category label at its narrow bottom
-  if (withLabels) return { x: bar.slotX - bar.slotW * 0.05, y: bar.y - 46, w: bar.slotW * 1.1, h: baseY + 60 - (bar.y - 46) };
+  if (withLabels) return { x: bar.slotX + bar.slotW * 0.02, y: bar.y - 54, w: bar.slotW * 0.96, h: baseY + 64 - (bar.y - 54) };
   return { x: bar.x, y: bar.y, w: bar.w, h: bar.h };
 }
 

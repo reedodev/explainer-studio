@@ -54,6 +54,8 @@ export async function loadAssets(board: any, dir: string) {
       }
 }
 
+/** Smallest label size the engine will shrink to on its own (matches the validator's 'small font' limit). */
+export const LABEL_FLOOR = 28;
 const roleOf = (e: any): Role => (e.role as Role) || "body";
 function envFor(board: any, scene: any, t: number, W: number, H: number): Env {
   const sceneIndex = Math.max(0, board.scenes.indexOf(scene));
@@ -65,15 +67,15 @@ export function textLayoutFor(style: StyleDef, c: any, e: any, all: any[], label
   if (label) {
     if (!e.label) return null;
     const f = style.font("label");
-    const inset = e.type === "circle" ? { x: e.x + e.w * 0.14 + 10, y: e.y + e.h * 0.14, w: e.w * 0.72 - 20, h: e.h * 0.72 } : { x: e.x + 22, y: e.y + 18, w: e.w - 44, h: e.h - 36 };
+    const inset = e.type === "circle" ? { x: e.x + e.w * 0.1 + 6, y: e.y + e.h * 0.14, w: e.w * 0.8 - 12, h: e.h * 0.72 } : { x: e.x + 22, y: e.y + 18, w: e.w - 44, h: e.h - 36 };
     if (e.labelSize) return layoutText(c, e.label, f.family, e.labelSize * f.scale, inset, e.align || "center", e.valign || "middle");
-    // No labelSize: grow the label with the box (42 px up to 64 px) and step down until it fits.
+    // No labelSize: grow the label with the box (42 px up to 64 px) and step down until it fits (readable floor 28 px, the same for rectangles and circles).
     let px = Math.round(Math.max(42, Math.min(64, inset.h * 0.3, inset.w * 0.14)));
     for (;;) {
       const L = layoutText(c, e.label, f.family, px * f.scale, inset, e.align || "center", e.valign || "middle");
       const fits = Math.max(...L.lines.map((l) => l.width)) <= inset.w && L.lines.length * L.lineH <= inset.h + L.size * 0.3;
-      if (fits || px <= 42) return L;
-      px -= 4;
+      if (fits || px <= LABEL_FLOOR) return L;
+      px = Math.max(LABEL_FLOOR, px - 4);
     }
   }
   const parent = all.find((q: any) => q.id === (e.parent || e.container));
@@ -151,16 +153,16 @@ function drawElement(style: StyleDef, c: any, e: any, p: number, env: Env, dir: 
       const n = e.data.length;
       const { bars, baseY } = chartLayout(e);
       const f = style.font("caption");
-      const labelSize = Math.max(34, 36 * f.scale); // category and value labels stay >= 34 px
+      const valueSize = Math.max(38, 40 * f.scale), labelSize = Math.max(34, 36 * f.scale); // value labels >= 38 px, category labels >= 34 px
       bars.forEach((bar, k) => {
         const bp = clamp01(p * n - k * 0.6);
         const h = bar.h * bp;
         if (h > 1) style.shape(c, { kind: "rect", x: bar.x, y: baseY - h, w: bar.w, h, fill: bar.color || "blue", seed: seed + k }, 1, env);
         // value above the bar (always shown, with the unit when given), category under the baseline
         const vText = `${bar.value}${e.unit ?? ""}`;
-        const V = layoutText(c, vText, f.family, labelSize, { x: bar.slotX, y: baseY - h - 46, w: bar.slotW, h: 42 }, "center", "bottom");
+        const V = layoutText(c, vText, f.family, valueSize, { x: bar.slotX, y: baseY - h - 52, w: bar.slotW, h: 48 }, "center", "bottom");
         if (bp > 0.5) style.text(c, V, clamp01((bp - 0.5) / 0.5), { color: style.textColor(env), role: "caption", seed: seed + 80 + k, env });
-        const L = layoutText(c, bar.label, f.family, labelSize, { x: bar.slotX + 4, y: baseY + 8, w: bar.slotW - 8, h: 52 }, "center", "top");
+        const L = layoutText(c, bar.label, f.family, labelSize, { x: bar.slotX + 4, y: baseY + 8, w: bar.slotW - 8, h: 56 }, "center", "top");
         style.text(c, L, bp, { color: style.textColor(env), role: "caption", seed: seed + 50 + k, env });
       });
       break;
@@ -337,8 +339,8 @@ export function textFitIssues(board: any, styleName?: string) {
       if (!L) continue;
       const widest = Math.max(...L.lines.map((l) => l.width));
       const need = L.lines.length * L.lineH;
-      if (widest > maxW + 1) { const chars = [...(e.type === "text" ? e.text : e.label)].length; const fit = Math.max(1, Math.floor((chars * maxW) / widest)); issues.push({ level: "error", scene: s.id, id: e.id, rule: "text wider than box", style: style.id, detail: `${Math.round(widest)}px > ${Math.round(maxW)}px; about ${fit} of ${chars} characters fit per line at this size: widen the box, shorten the text or add a space so it can wrap` }); }
-      if (need > maxH + L.size * 0.3) issues.push({ level: "error", scene: s.id, id: e.id, rule: `text clipped (wraps to ${L.lines.length} lines)`, style: style.id, detail: `${Math.round(need)}px > ${Math.round(maxH)}px` });
+      if (widest > maxW + 1) { const chars = [...(e.type === "text" ? e.text : e.label)].length; const fit = Math.max(1, Math.floor((chars * maxW) / widest)); issues.push({ level: "error", scene: s.id, id: e.id, rule: "text wider than box", style: style.id, detail: `style ${style.id}: ${Math.round(widest)}px > ${Math.round(maxW)}px; at most about ${fit} of ${chars} characters fit per line in ${style.id} even at the smallest readable size: widen the box, shorten the text or add a space so it can wrap` }); }
+      if (need > maxH + L.size * 0.3) issues.push({ level: "error", scene: s.id, id: e.id, rule: `text clipped (wraps to ${L.lines.length} lines)`, style: style.id, detail: `style ${style.id}: ${Math.round(need)}px > ${Math.round(maxH)}px; make the box taller or shorten the text` });
     }
   return issues;
 }
