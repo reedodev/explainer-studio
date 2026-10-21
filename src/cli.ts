@@ -15,7 +15,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import { Storyboard } from "./storyboard/schema.js";
+import { Storyboard, resolveArrowTargets } from "./storyboard/schema.js";
 import { projectPaths, ensureDirs, saveJson } from "./project.js";
 import { resolveProvider } from "./tts/index.js";
 import { decodeToPcm, writeWav, startEncoder, probeVideo, SAMPLE_RATE } from "./media/ffmpeg.js";
@@ -112,8 +112,11 @@ const count = (list: any[], lvl: string) => list.filter((x) => x.level === lvl).
 function summary(list: any[], head: string) {
   const e = count(list, "error"), w = count(list, "warning");
   const line = (x: any) => `  ${x.level === "error" ? "ERROR" : "warn "} ${x.scene ?? ""}${x.id ? " / " + x.id : ""}: ${x.rule}${x.detail ? " (" + x.detail + ")" : ""}`;
-  const shown = [...list.filter((x) => x.level === "error"), ...list.filter((x) => x.level !== "error")].slice(0, 25);
-  return [`${head}`, `${e} error(s), ${w} warning(s)`, ...shown.map(line), list.length > shown.length ? `  ... ${list.length - shown.length} more in validation-report.md` : ""].filter(Boolean).join("\n");
+  const listed = list.filter((x) => x.level === "error" || x.level === "warning");
+  const info = list.filter((x) => x.level === "info");
+  const expected = info.reduce((n, x) => n + (parseInt(x.detail, 10) || 0), 0);
+  const shown = [...listed.filter((x) => x.level === "error"), ...listed.filter((x) => x.level !== "error")].slice(0, 25);
+  return [`${head}`, `${e} error(s), ${w} warning(s)` + (expected ? `, ${expected} intended overlap(s) not listed (arrows touching their shapes, nested shapes, dots on a line)` : ""), ...shown.map(line), listed.length > shown.length ? `  ... ${listed.length - shown.length} more in validation-report.md` : ""].filter(Boolean).join("\n");
 }
 
 /** Output locations for a style: the main project folder, or variants/<style>/. */
@@ -208,6 +211,7 @@ async function main() {
   ensureDirs(pp);
   const b: any = read(pp.storyboard);
   Storyboard.parse(b);
+  resolveArrowTargets(b);
 
   if (cmd === "set-style") {
     b.style = resolveStyleId(args[2]);
@@ -321,6 +325,24 @@ async function main() {
     await enc.finish();
     if (clip) { console.log(target); return; }
     saveJson(out.ffprobe, probeVideo(out.final));
+  }
+  if (cmd === "build" && !has("--clip")) {
+    // one frame at 70 % of every scene, so weak scenes show up without extracting frames by hand
+    const tiles: { file: string; label: string }[][] = [];
+    const dir70 = path.join(out.dir, "contact-70");
+    fs.mkdirSync(dir70, { recursive: true });
+    for (let i = 0; i < b.scenes.length; i += 3) {
+      const row: { file: string; label: string }[] = [];
+      for (let k = i; k < Math.min(i + 3, b.scenes.length); k++) {
+        const s = b.scenes[k], f = path.join(dir70, "scene-" + String(k + 1).padStart(2, "0") + ".png");
+        fs.writeFileSync(f, frame(b, s, s.duration * 0.7, pp.dir, "", { style }).toBuffer("image/png"));
+        row.push({ file: f, label: "scenes " + (i + 1) + "-" + Math.min(i + 3, b.scenes.length) });
+      }
+      tiles.push(row);
+    }
+    const sheet70 = path.join(out.dir, "contact-sheet.png");
+    await contactSheet(tiles, sheet70, ["first", "second", "third"]);
+    console.log("contact sheet (one frame at 70% per scene): " + sheet70);
   }
   fs.writeFileSync(out.coverH, cover(b, false, style).toBuffer("image/png"));
   fs.writeFileSync(out.coverV, cover(b, true, style).toBuffer("image/png"));

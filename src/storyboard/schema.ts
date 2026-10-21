@@ -73,8 +73,13 @@ export const LineEl = Base.extend({
 
 export const ArrowEl = Base.extend({
   type: z.literal("arrow"),
-  from: Point,
-  to: Point,
+  /** Start and end points. Either may be left out when the matching *Target is given. */
+  from: Point.optional(),
+  to: Point.optional(),
+  /** Aim at another element ("id") or a chart bar ("chart1:blue" by label, "chart1:2" by index from 0). The end stops 10 px before the edge. */
+  toTarget: z.string().optional(),
+  /** Start next to another element or chart bar; same syntax as toTarget. */
+  fromTarget: z.string().optional(),
   /** Perpendicular bend in px for a curved arrow (0 = straight). */
   bend: z.number().optional(),
   label: z.string().optional(),
@@ -213,14 +218,15 @@ export function elementBox(el: Element, all?: Element[]): Box | null {
     }
     case "arrow": {
       const pad = 20;
-      const x = Math.min(el.from[0], el.to[0]) - pad;
-      const y = Math.min(el.from[1], el.to[1]) - pad - Math.abs(el.bend ?? 0);
-      return { x, y, w: Math.abs(el.to[0] - el.from[0]) + pad * 2, h: Math.abs(el.to[1] - el.from[1]) + pad * 2 + Math.abs(el.bend ?? 0) * 2 };
+      const [fx, fy] = el.from ?? el.to ?? [0, 0], [tx, ty] = el.to ?? el.from ?? [0, 0];
+      const x = Math.min(fx, tx) - pad;
+      const y = Math.min(fy, ty) - pad - Math.abs(el.bend ?? 0);
+      return { x, y, w: Math.abs(tx - fx) + pad * 2, h: Math.abs(ty - fy) + pad * 2 + Math.abs(el.bend ?? 0) * 2 };
     }
     case "highlight": {
       if (el.target && all) {
-        const t = all.find((e) => e.id === el.target);
-        if (t && t.type !== "highlight") return elementBox(t, all);
+        const b = targetBox(el.target, all);
+        if (b) return b;
       }
       if (el.x !== undefined && el.y !== undefined && el.w && el.h) return { x: el.x, y: el.y, w: el.w, h: el.h };
       return null;
@@ -231,3 +237,66 @@ export function elementBox(el: Element, all?: Element[]): Box | null {
 }
 
 
+
+/** Bar geometry of a chart (shared by drawing, highlight/arrow targets and validation). */
+export const CHART_LABEL_H = 64; // category label strip under the bars (34 px text)
+export const CHART_VALUE_H = 50; // value label above the tallest bar (34 px text)
+export type ChartBar = { label: string; value: number; color?: string; x: number; y: number; w: number; h: number; slotX: number; slotW: number };
+export function chartLayout(el: { x: number; y: number; w: number; h: number; data: { label: string; value: number; color?: string }[] }): { bars: ChartBar[]; baseY: number; plotH: number } {
+  const n = el.data.length, slot = el.w / n, bw = slot * 0.65;
+  const baseY = el.y + el.h - CHART_LABEL_H, plotH = Math.max(40, el.h - CHART_LABEL_H - CHART_VALUE_H);
+  const max = Math.max(...el.data.map((d) => d.value), 1e-9);
+  // A bar never gets thinner than 12 % of the plot, so 4 vs 60 is still a visible bar (the value label tells the truth).
+  const minH = plotH * 0.12;
+  const bars = el.data.map((d, k) => {
+    const h = d.value <= 0 ? 0 : Math.min(plotH, Math.max(minH, (d.value / max) * plotH));
+    return { label: d.label, value: d.value, color: d.color, x: el.x + k * slot + (slot - bw) / 2, y: baseY - h, w: bw, h, slotX: el.x + k * slot, slotW: slot };
+  });
+  return { bars, baseY, plotH };
+}
+
+/** Box of a target: "id" for any element, "chartId:label" or "chartId:index" for one chart bar ("chartId:label+labels" adds its two labels). */
+export function targetBox(target: string, all: Element[]): Box | null {
+  const whole = all.find((e) => e.id === target);
+  if (whole && whole.type !== "highlight") return elementBox(whole, all);
+  const k = target.indexOf(":");
+  if (k < 0) return null;
+  const ch = all.find((e) => e.id === target.slice(0, k));
+  if (!ch || ch.type !== "chart") return null;
+  let key = target.slice(k + 1).trim();
+  // "chart:blue+labels" also covers the value label above and the category label below the bar
+  const withLabels = key.endsWith("+labels");
+  if (withLabels) key = key.slice(0, -7).trim();
+  const { bars, baseY } = chartLayout(ch as any);
+  const bar = /^\d+$/.test(key) ? bars[Number(key)] : bars.find((b) => b.label.toLowerCase() === key.toLowerCase());
+  if (!bar) return null;
+  // 10 % wider than the slot, so a circle around it clears the category label at its narrow bottom
+  if (withLabels) return { x: bar.slotX - bar.slotW * 0.05, y: bar.y - 46, w: bar.slotW * 1.1, h: baseY + 60 - (bar.y - 46) };
+  return { x: bar.x, y: bar.y, w: bar.w, h: bar.h };
+}
+
+/** Point on the rectangle (grown by gap) where a straight line from `from` to the rectangle's centre enters it. */
+export function edgePoint(from: [number, number], b: Box, gap = 10): [number, number] {
+  const cx = b.x + b.w / 2, cy = b.y + b.h / 2, dx = from[0] - cx, dy = from[1] - cy;
+  const hw = b.w / 2 + gap, hh = b.h / 2 + gap;
+  if (Math.abs(dx) <= hw && Math.abs(dy) <= hh) return [cx, cy];
+  const s = Math.min(Math.abs(dx) > 1e-9 ? hw / Math.abs(dx) : Infinity, Math.abs(dy) > 1e-9 ? hh / Math.abs(dy) : Infinity);
+  return [Math.round(cx + dx * s), Math.round(cy + dy * s)];
+}
+
+/** Fill in arrow ends from toTarget/fromTarget. Call once after parsing; everything downstream sees plain from/to. */
+export function resolveArrowTargets(sb: { scenes: { id: string; elements: Element[] }[] }) {
+  for (const s of sb.scenes)
+    for (const e of s.elements) {
+      if (e.type !== "arrow") continue;
+      const tb = e.toTarget ? targetBox(e.toTarget, s.elements) : null, fb = e.fromTarget ? targetBox(e.fromTarget, s.elements) : null;
+      if (e.toTarget && !tb) throw new Error(`scene ${s.id}, arrow ${e.id}: toTarget "${e.toTarget}" is not an element id or a chart bar ("chartId:label")`);
+      if (e.fromTarget && !fb) throw new Error(`scene ${s.id}, arrow ${e.id}: fromTarget "${e.fromTarget}" is not an element id or a chart bar ("chartId:label")`);
+      const centre = (b: Box): [number, number] => [b.x + b.w / 2, b.y + b.h / 2];
+      // fromTarget / toTarget always win over a stored from / to, so moving the target moves the arrow
+      if (fb) e.from = edgePoint(tb ? centre(tb) : (e.to ?? centre(fb)), fb);
+      if (tb) e.to = edgePoint(e.from ?? centre(tb), tb);
+      if (!e.from || !e.to) throw new Error(`scene ${s.id}, arrow ${e.id}: needs from and to (or fromTarget/toTarget)`);
+    }
+  return sb;
+}

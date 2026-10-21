@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { OUTPUT_ROOT } from "./config.js";
-import { Storyboard } from "./storyboard/schema.js";
+import { Storyboard, resolveArrowTargets } from "./storyboard/schema.js";
 
 export interface ProjectPaths {
   name: string;
@@ -77,6 +77,7 @@ export function loadStoryboard(pp: ProjectPaths): Storyboard {
     const msg = res.error.issues.map((i) => `  - ${i.path.join(".")}: ${i.message}`).join("\n");
     throw new Error(`storyboard.json schema errors:\n${msg}`);
   }
+  resolveArrowTargets(res.data as any);
   return res.data;
 }
 

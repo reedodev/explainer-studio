@@ -292,17 +292,17 @@
           "h": 552,
           "data": [
             {
-              "label": "red 700 nm · 1",
+              "label": "red 700 nm",
               "value": 1,
               "color": "red"
             },
             {
-              "label": "green 550 nm · 2.6",
+              "label": "green 550 nm",
               "value": 2.6,
               "color": "green"
             },
             {
-              "label": "blue 450 nm · 5.9",
+              "label": "blue 450 nm",
               "value": 5.9,
               "color": "blue"
             }
@@ -326,19 +326,13 @@
             1240,
             564
           ],
-          "to": [
-            1060,
-            390
-          ]
+          "toTarget": "chart:blue 450 nm"
         },
         {
           "id": "hl",
           "type": "highlight",
-          "x": 800,
-          "y": 298,
-          "w": 360,
-          "h": 598,
-          "style": "circle"
+          "style": "circle",
+          "target": "chart:blue 450 nm+labels"
         },
         {
           "id": "mol",

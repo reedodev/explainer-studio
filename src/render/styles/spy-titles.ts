@@ -128,12 +128,14 @@ export const spyTitles: StyleDef = {
       this.stroke(c, ellipsePts(b.x + b.w / 2, b.y + b.h / 2, b.w / 2 + 26, b.h / 2 + 22, 90), p, { seed, color: col, kind: "deco", width: 8, env });
       return;
     }
-    // a paper strip slid under the words
-    const y = variant === "marker" ? b.y + b.h * 0.55 : b.y + b.h + 4;
-    const h = variant === "marker" ? b.h * 0.45 : 12;
+    // a paper strip slid under the words. A block marker only works on a light ground (dark words, multiply);
+    // on a red or dark ground the words are light, a block would swallow them, so it becomes a thin underline.
+    const block = variant === "marker" && g !== RED && !isDark(g);
+    const y = block ? b.y + b.h * 0.55 : b.y + b.h + 4;
+    const h = block ? b.h * 0.45 : 12;
     c.save();
     c.globalCompositeOperation = isDark(g) ? "source-over" : "multiply";
-    c.globalAlpha = variant === "marker" ? 0.85 : 1;
+    c.globalAlpha = block ? 0.55 : 1;
     paperPiece(c, blobPts("rect", b.x - 10, y, (b.w + 20) * e, h, 1.2, seed, 0.1), col, g);
     c.restore();
   },

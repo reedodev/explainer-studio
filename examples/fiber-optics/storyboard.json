@@ -556,7 +556,7 @@
           "id": "title",
           "type": "text",
           "x": 120,
-          "y": 70,
+          "y": 140,
           "w": 1500,
           "h": 100,
           "text": "Pick the color glass barely absorbs",
@@ -568,26 +568,27 @@
           "type": "chart",
           "chartType": "bar",
           "x": 140,
-          "y": 230,
+          "y": 250,
           "w": 1000,
           "h": 580,
           "data": [
             {
-              "label": "850 nm · 1.81",
+              "label": "850 nm",
               "value": 1.81,
               "color": "red"
             },
             {
-              "label": "1310 nm · 0.34",
+              "label": "1310 nm",
               "value": 0.34,
               "color": "blue"
             },
             {
-              "label": "1550 nm · 0.19",
+              "label": "1550 nm",
               "value": 0.19,
               "color": "green"
             }
-          ]
+          ],
+          "unit": " dB/km"
         },
         {
           "id": "call",
@@ -607,10 +608,7 @@
             1240,
             560
           ],
-          "to": [
-            1010,
-            700
-          ]
+          "toTarget": "chart:1550 nm"
         },
         {
           "id": "src",
@@ -626,11 +624,17 @@
         {
           "id": "hb",
           "type": "highlight",
-          "x": 790,
-          "y": 660,
-          "w": 300,
-          "h": 190,
-          "style": "circle"
+          "style": "circle",
+          "target": "chart:1550 nm+labels"
+        },
+        {
+          "id": "bulb",
+          "type": "icon",
+          "icon": "lightbulb",
+          "x": 1450,
+          "y": 650,
+          "w": 140,
+          "h": 140
         }
       ],
       "drawOrder": [
@@ -639,6 +643,7 @@
         "call",
         "ar",
         "src",
+        "bulb",
         "hb"
       ],
       "subtitle": "Glass still absorbs a little light, so the color matters. At 1550 nm, standard fiber loses only about 0.2 dB per km."

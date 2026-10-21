@@ -5,7 +5,7 @@
  */
 import path from "node:path";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import { elementBox } from "../storyboard/schema.js";
+import { chartLayout, elementBox, targetBox } from "../storyboard/schema.js";
 import { clamp01, registerFonts, type Cnv, type Pt } from "./core.js";
 import { getStyle, resolveStyleId, type StyleDef } from "./styles/index.js";
 import { layoutText, styledIcon } from "./styles/shared.js";
@@ -94,7 +94,8 @@ function highlightBox(style: StyleDef, c: any, e: any, all: any[]) {
         return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
       }
     }
-    if (tg && tg.type !== "highlight") return elementBox(tg, all);
+    const tb = targetBox(e.target, all);
+    if (tb) return tb;
   }
   if (e.x !== undefined && e.y !== undefined && e.w && e.h) return { x: e.x, y: e.y, w: e.w, h: e.h };
   return null;
@@ -147,14 +148,19 @@ function drawElement(style: StyleDef, c: any, e: any, p: number, env: Env, dir: 
       break;
     }
     case "chart": {
-      const max = Math.max(...e.data.map((d: any) => d.value));
-      const n = e.data.length, slot = e.w / n, bw = slot * 0.65;
-      e.data.forEach((d: any, k: number) => {
+      const n = e.data.length;
+      const { bars, baseY } = chartLayout(e);
+      const f = style.font("caption");
+      const labelSize = Math.max(34, 36 * f.scale); // category and value labels stay >= 34 px
+      bars.forEach((bar, k) => {
         const bp = clamp01(p * n - k * 0.6);
-        const h = (d.value / max) * (e.h - 50) * bp;
-        if (h > 1) style.shape(c, { kind: "rect", x: e.x + k * slot, y: e.y + e.h - 50 - h, w: bw, h, fill: d.color || "blue", seed: seed + k }, 1, env);
-        const f = style.font("caption");
-        const L = layoutText(c, d.label + (bp >= 1 && e.unit !== undefined ? ` ${d.value}${e.unit}` : ""), f.family, 30 * f.scale, { x: e.x + k * slot - 10, y: e.y + e.h - 44, w: bw + 20, h: 44 }, "center", "top");
+        const h = bar.h * bp;
+        if (h > 1) style.shape(c, { kind: "rect", x: bar.x, y: baseY - h, w: bar.w, h, fill: bar.color || "blue", seed: seed + k }, 1, env);
+        // value above the bar (always shown, with the unit when given), category under the baseline
+        const vText = `${bar.value}${e.unit ?? ""}`;
+        const V = layoutText(c, vText, f.family, labelSize, { x: bar.slotX, y: baseY - h - 46, w: bar.slotW, h: 42 }, "center", "bottom");
+        if (bp > 0.5) style.text(c, V, clamp01((bp - 0.5) / 0.5), { color: style.textColor(env), role: "caption", seed: seed + 80 + k, env });
+        const L = layoutText(c, bar.label, f.family, labelSize, { x: bar.slotX + 4, y: baseY + 8, w: bar.slotW - 8, h: 52 }, "center", "top");
         style.text(c, L, bp, { color: style.textColor(env), role: "caption", seed: seed + 50 + k, env });
       });
       break;

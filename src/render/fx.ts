@@ -15,6 +15,7 @@
  */
 import { cachedTexture, clamp01, easeInOutCubic, easeOutCubic, ellipsePts, font, hexRgb, paintMottled, rectPts, type Ctx, type Pt } from "./core.js";
 import { iconPaths } from "./icons.js";
+import { targetBox } from "../storyboard/schema.js";
 import type { Env, TextLayout } from "./styles/types.js";
 
 export interface BoardFx {
@@ -167,8 +168,8 @@ export function tipOf(e: any, p: number, all: any[], layout: (e: any, label: boo
     case "icon":
       return alongPaths(iconPaths(e.icon).map((q) => q.map((a) => [e.x + (a[0] / 100) * e.w, e.y + (a[1] / 100) * e.h] as Pt)), p);
     case "highlight": {
-      const t = all.find((q: any) => q.id === e.target);
-      const b = e.w ? e : t && t.w ? t : null;
+      const t = e.target ? targetBox(e.target, all) : null;
+      const b = e.w ? e : t;
       if (!b) return null;
       if (e.style === "circle") return along(ellipsePts(b.x + b.w / 2, b.y + b.h / 2, b.w / 2 + 30, b.h / 2 + 24, 105), p);
       if (e.style === "marker") return [b.x - 10 + (b.w + 20) * p, b.y + b.h * 0.55];

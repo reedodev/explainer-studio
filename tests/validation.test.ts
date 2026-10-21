@@ -150,6 +150,35 @@ count++;console.log('PASS style aliases resolve and unknown styles are rejected'
  const sa=await crop(buf(b1,9.5,'Subtitle stays put.')),sb=await crop(buf(still,9.5,'Subtitle stays put.'));assert(Buffer.compare(Buffer.from(sa),Buffer.from(sb))===0,'subtitle band changed with the camera');count++;console.log('PASS subtitles are unaffected by the camera');
  const fs2=await import('node:fs');for(const ex of ['fiber-optics','sky-blue','ai-agent-vs-chatbot-ko']){const p='examples/'+ex+'/storyboard.json';if(!fs2.existsSync(p))continue;const sb2=JSON.parse(fs2.readFileSync(p,'utf8'));for(const st of ['whiteboard','ink-wash','blueprint'])for(const s of sb2.scenes){const box=contentBox(s);if(!box)continue;const cam=cameraAt(sb2,s,st,s.duration||10);for(const [x,y] of [[box.x0,box.y0],[box.x1,box.y1]]){const [X,Y]=project(cam,x,y);assert(X>=CAMERA_SAFE.x0-0.5&&X<=CAMERA_SAFE.x1+0.5&&Y>=CAMERA_SAFE.y0-0.5&&Y<=CAMERA_SAFE.y1+0.5,`camera pushes ${ex}/${s.id} out of the safe area (${st}): ${X},${Y}`);}}}count++;console.log('PASS camera never pushes example content past the safe area or into the subtitle band');
  const o=mk();o.scenes[0].duration=12;time(o);const second=o.scenes[0].elements.find((e:any)=>e.id==='a');const title=o.scenes[0].elements.find((e:any)=>e.id==='h');assert(second.start<=12*0.08,'first visual starts too late: '+second.start);assert(title.end<=1.0+1e-9,'title types too slowly: '+title.end);count++;console.log('PASS scene opens with title and first visual in parallel');}{const {textLayoutFor}=await import('../src/render/engine.js');const {getStyle}=await import('../src/render/styles/index.js');const {createCanvas}=await import('@napi-rs/canvas');const c=createCanvas(10,10).getContext('2d');const st=getStyle('whiteboard');const big={id:'b',type:'rectangle',x:100,y:300,w:780,h:360,label:'Agent does the work'};const L1=textLayoutFor(st,c,big,[big],true)!;assert(L1.size>48,'label did not grow with a big box: '+L1.size);const small={...big,w:300,h:150,label:'a much longer label that has to shrink down to fit'};const L2=textLayoutFor(st,c,small,[small],true)!;assert(L2.size<=L1.size);const fixed={...big,labelSize:40};assert(textLayoutFor(st,c,fixed,[fixed],true)!.size===40*st.font('label').scale,'explicit labelSize ignored');const many:any={scenes:[{id:'m',duration:10,narration:'x.',drawOrder:[],elements:Array.from({length:14},(_,i)=>({id:'e'+i,type:'rectangle',x:100+i,y:300,w:10,h:10}))}]};many.scenes[0].drawOrder=many.scenes[0].elements.map((e:any)=>e.id);const tm=validateBoard(many).find((i:any)=>i.rule==='too many elements');assert(tm&&/14 elements, limit 12/.test(tm.detail),'too many elements has no count: '+JSON.stringify(tm));count++;console.log('PASS labels grow with their box; explicit labelSize kept; element-limit message shows the count');}
+{
+  const {chartLayout,targetBox,resolveArrowTargets,edgePoint}=await import('../src/storyboard/schema.js');
+  const chart:any={id:'ch',type:'chart',x:120,y:260,w:1000,h:640,data:[{label:'tiny',value:4,color:'red'},{label:'huge',value:60,color:'blue'}]};
+  const lay=chartLayout(chart);
+  assert(lay.bars[0].h>=lay.plotH*0.12-1e-6,'a 4 vs 60 bar must stay visible');
+  assert(lay.bars[1].h<=lay.plotH+1e-6&&lay.bars[1].y>=chart.y+50-1e-6,'tallest bar leaves room for its value label');
+  assert.deepEqual(targetBox('ch:huge',[chart]),{x:lay.bars[1].x,y:lay.bars[1].y,w:lay.bars[1].w,h:lay.bars[1].h});
+  assert.deepEqual(targetBox('ch:1',[chart]),targetBox('ch:huge',[chart]),'bar by index equals bar by label');
+  assert(targetBox('ch:huge+labels',[chart])!.h>targetBox('ch:huge',[chart])!.h,'+labels grows the box');
+  assert.equal(targetBox('ch:nope',[chart]),null);
+  const scene:any={id:'s',narration:'x',duration:5,drawOrder:['ch','ar'],elements:[chart,{id:'ar',type:'arrow',from:[1300,500],toTarget:'ch:huge'}]};
+  resolveArrowTargets({scenes:[scene]} as any);
+  const end=scene.elements[1].to,bb=targetBox('ch:huge',[chart])!;
+  assert(end[0]>bb.x+bb.w&&end[0]<=bb.x+bb.w+12,'arrow stops just outside the bar edge: '+end);
+  const bad:any={id:'s2',elements:[chart,{id:'ar',type:'arrow',from:[1,1],toTarget:'ch:missing'}]};assert.throws(()=>resolveArrowTargets({scenes:[bad]} as any),/toTarget/);
+  assert.deepEqual(edgePoint([0,100],{x:100,y:50,w:100,h:100},10),[90,100]);
+  const clean=validateBoard({scenes:[scene]} as any);
+  assert(!clean.some((i:any)=>i.level==='warning'&&i.rule==='overlap'),'an arrow aimed at its bar is not a warning');
+  const cross:any={id:'s3',narration:'x',duration:5,drawOrder:['ch','ar'],elements:[chart,{id:'ar',type:'arrow',from:[200,500],to:[1000,500]}]};
+  const hit=validateBoard({scenes:[cross]} as any).find((i:any)=>i.rule==='overlap');
+  assert(hit&&/check this/.test(hit.detail)&&/huge|tiny/.test(hit.detail),'an arrow crossing a bar is listed with a verdict: '+JSON.stringify(hit));
+  const two:any={id:'s4',narration:'x',duration:5,drawOrder:['a','b','c'],elements:[{id:'a',type:'rectangle',x:100,y:300,w:300,h:200},{id:'b',type:'rectangle',x:200,y:350,w:300,h:200},{id:'c',type:'arrow',from:[420,200],to:[700,200]}]};
+  const ov=validateBoard({scenes:[two]} as any).find((i:any)=>i.rule==='overlap');
+  assert(ov&&/\d+x\d+px/.test(ov.detail),'rectangle overlap reports its size: '+JSON.stringify(ov));
+  const touch:any={id:'s5',narration:'x',duration:5,drawOrder:['a','c'],elements:[{id:'a',type:'rectangle',x:300,y:300,w:300,h:200},{id:'c',type:'arrow',from:[100,400],to:[320,400]}]};
+  const tr=validateBoard({scenes:[touch]} as any);
+  assert(!tr.some((i:any)=>i.rule==='overlap')&&tr.some((i:any)=>i.level==='info'&&i.rule==='expected overlaps'),'an arrow ending inside its shape is counted, not listed');
+  count++;console.log('PASS chart bar geometry, bar/arrow targets and overlap verdicts');
+}
 console.log(count+' tests passed; 0 failed.');
 
 
