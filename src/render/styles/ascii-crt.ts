@@ -4,7 +4,7 @@
  * are dither characters, stickers become ASCII art, text types in with a block cursor.
  */
 import { createCanvas } from "@napi-rs/canvas";
-import { cachedTexture, clamp01, easeInOutCubic, ellipsePts, font, rectPts, resample, rng, vignette, type Pt } from "../core.js";
+import { cachedTexture, clamp01, easeInOutCubic, ellipsePts, font, rectPts, resample, rng, vignette, type Pt, ringPts } from "../core.js";
 import { bandSubtitle, layoutText, revealText, styledIcon } from "./shared.js";
 import type { StyleDef } from "./types.js";
 
@@ -198,7 +198,7 @@ export const asciiCrt: StyleDef = {
       c.fillRect(b.x - 8, b.y, (b.w + 16) * e, b.h);
       c.restore();
     } else if (variant === "circle") {
-      this.stroke(c, ellipsePts(b.x + b.w / 2, b.y + b.h / 2, b.w / 2 + 30, b.h / 2 + 24, 90), p, { seed, color: ALT, kind: "deco", env });
+      this.stroke(c, ringPts(b, 30, 24, 90), p, { seed, color: ALT, kind: "deco", env });
     } else {
       const list: Cell[] = [];
       for (let x = Math.round(b.x / CW); x <= Math.round((b.x + b.w) / CW); x++) list.push([x, Math.round((b.y + b.h) / CH) + 1, "▀"]);

@@ -3,7 +3,7 @@
  * streaks, pale ink washes with bled edges, serif type that darkens in like soaking ink,
  * a vermilion seal as the only colour accent, and ink blooms as scene transitions.
  */
-import { blobPts, cachedTexture, clamp01, easeInOutCubic, easeOutCubic, ellipsePts, fbm, fillPoly, font, hash2, hexRgb, paintMottled, partialPath, rectPts, resample, ribbon, rng, vignette, type Pt } from "../core.js";
+import { blobPts, cachedTexture, clamp01, easeInOutCubic, easeOutCubic, ellipsePts, fbm, fillPoly, font, hash2, hexRgb, paintMottled, partialPath, rectPts, resample, ribbon, rng, vignette, type Pt, ringPts } from "../core.js";
 import { bandSubtitle, genericCover, layoutText, processedImage, revealText } from "./shared.js";
 import type { StyleDef, Token } from "./types.js";
 
@@ -137,7 +137,7 @@ export const inkWash: StyleDef = {
       return;
     }
     if (variant === "circle") {
-      this.stroke(c, ellipsePts(b.x + b.w / 2, b.y + b.h / 2, b.w / 2 + 30, b.h / 2 + 24, 110, -Math.PI / 2, Math.PI * 1.86), p, { seed, color: INK, kind: "deco", width: 7, env });
+      this.stroke(c, ringPts(b, 30, 24, 110, -Math.PI / 2, Math.PI * 1.86), p, { seed, color: INK, kind: "deco", width: 7, env });
       return;
     }
     // marker -> vermilion seal stamped beside the words

@@ -3,7 +3,7 @@
  * White paper, black type and bars, light greys, ONE signal red. Everything wipes or snaps
  * with cubic-bezier(.7,0,.2,1); nothing bounces, nothing fades, no texture.
  */
-import { clamp01, ellipsePts, font, partialPath, snapEase, strokePoly } from "../core.js";
+import { clamp01, ellipsePts, font, partialPath, snapEase, strokePoly, ringPts } from "../core.js";
 import { bandSubtitle, layoutText, processedImage, revealText, styledIcon } from "./shared.js";
 import type { StyleDef, Token } from "./types.js";
 
@@ -104,7 +104,7 @@ export const swissMotion: StyleDef = {
   highlight(c, b, p, variant, _fill, env, seed) {
     const e = snapEase(p);
     if (variant === "circle") {
-      this.stroke(c, ellipsePts(b.x + b.w / 2, b.y + b.h / 2, b.w / 2 + 26, b.h / 2 + 20, 100), p, { seed, color: RED, kind: "deco", width: 5, env });
+      this.stroke(c, ringPts(b, 26, 20, 100), p, { seed, color: RED, kind: "deco", width: 5, env });
     } else if (variant === "marker") {
       // signal-red bar under the words: the one exception on the page
       c.fillStyle = RED;

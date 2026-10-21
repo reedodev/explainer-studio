@@ -3,7 +3,7 @@
  * translucent dyed hide with dark carved outlines, lace holes and rivets; puppets tremble a
  * little in the hand; the lamp dims and relights between scenes.
  */
-import { blobPts, cachedTexture, clamp01, easeInOutCubic, easeOutCubic, ellipsePts, fillPoly, font, hexRgb, noise2, partialPath, rectPts, resample, ribbon, rng, strokePoly, vignette, type Pt } from "../core.js";
+import { blobPts, cachedTexture, clamp01, easeInOutCubic, easeOutCubic, ellipsePts, fillPoly, font, hexRgb, noise2, partialPath, rectPts, resample, ribbon, rng, strokePoly, vignette, type Pt, ringPts } from "../core.js";
 import { bandSubtitle, layoutText, processedImage, revealText, styledIcon } from "./shared.js";
 import type { Env, StyleDef } from "./types.js";
 
@@ -124,7 +124,7 @@ export const shadowPuppet: StyleDef = {
   highlight(c, b, p, variant, fill, env, seed) {
     const e = easeOutCubic(p);
     if (variant === "circle") {
-      this.stroke(c, ellipsePts(b.x + b.w / 2, b.y + b.h / 2, b.w / 2 + 28, b.h / 2 + 22, 100), p, { seed, color: INK, kind: "deco", env });
+      this.stroke(c, ringPts(b, 28, 22, 100), p, { seed, color: INK, kind: "deco", env });
       return;
     }
     if (variant === "marker") {

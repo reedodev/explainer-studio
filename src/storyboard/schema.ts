@@ -180,6 +180,8 @@ export const Storyboard = z.object({
   stickers: z.array(StickerSpec).default([]),
   /** Default camera for every scene (scene.camera wins). Styles swiss-motion and ascii-crt default to still. */
   camera: z.enum(["push", "pan-left", "pan-right", "still"]).optional(),
+  /** Wanted video length in seconds. Build warns when the estimated length is more than 10 % over it. */
+  targetSeconds: z.number().positive().optional(),
   /** Share of each scene by which all elements are drawn (default 0.65). */
   drawBy: z.number().min(0.3).max(0.97).optional(),
   /** Optional bottom-subtitle font size in px for band subtitles (style default, usually 38, when absent). */
@@ -255,6 +257,9 @@ export function chartLayout(el: { x: number; y: number; w: number; h: number; da
   return { bars, baseY, plotH };
 }
 
+/** True for a chart-bar target that includes its labels ("chartId:label+labels"). */
+export const isChartLabelTarget = (t?: string) => !!t && t.includes(":") && t.endsWith("+labels");
+
 /** Box of a target: "id" for any element, "chartId:label" or "chartId:index" for one chart bar ("chartId:label+labels" adds its two labels). */
 export function targetBox(target: string, all: Element[]): Box | null {
   const whole = all.find((e) => e.id === target);
@@ -270,8 +275,9 @@ export function targetBox(target: string, all: Element[]): Box | null {
   const { bars, baseY } = chartLayout(ch as any);
   const bar = /^\d+$/.test(key) ? bars[Number(key)] : bars.find((b) => b.label.toLowerCase() === key.toLowerCase());
   if (!bar) return null;
-  // 10 % wider than the slot, so a circle around it clears the category label at its narrow bottom
-  if (withLabels) return { x: bar.slotX + bar.slotW * 0.02, y: bar.y - 54, w: bar.slotW * 0.96, h: baseY + 64 - (bar.y - 54) };
+  // a "circle" highlight on this box is drawn as a rounded rectangle (see ringPts), never as a narrowing ellipse
+  // bottom stops 8 px under the category label strip text, so a ring around it stays clear of a footnote below the chart
+  if (withLabels) return { x: bar.slotX + bar.slotW * 0.02, y: bar.y - 54, w: bar.slotW * 0.96, h: baseY + 60 - (bar.y - 54) };
   return { x: bar.x, y: bar.y, w: bar.w, h: bar.h };
 }
 
@@ -282,6 +288,15 @@ export function edgePoint(from: [number, number], b: Box, gap = 10): [number, nu
   if (Math.abs(dx) <= hw && Math.abs(dy) <= hh) return [cx, cy];
   const s = Math.min(Math.abs(dx) > 1e-9 ? hw / Math.abs(dx) : Infinity, Math.abs(dy) > 1e-9 ? hh / Math.abs(dy) : Infinity);
   return [Math.round(cx + dx * s), Math.round(cy + dy * s)];
+}
+
+/** True when the target names one chart bar ("chartId:label" or "chartId:index", with or without +labels). */
+export function isChartBarTarget(target: string, all: Element[]): boolean {
+  const k = target.indexOf(":");
+  if (k < 0) return false;
+  const whole = all.find((e) => e.id === target);
+  if (whole && whole.type !== "highlight") return false;
+  return all.some((e) => e.id === target.slice(0, k) && e.type === "chart");
 }
 
 /** Fill in arrow ends from toTarget/fromTarget. Call once after parsing; everything downstream sees plain from/to. */
@@ -295,7 +310,11 @@ export function resolveArrowTargets(sb: { scenes: { id: string; elements: Elemen
       const centre = (b: Box): [number, number] => [b.x + b.w / 2, b.y + b.h / 2];
       // fromTarget / toTarget always win over a stored from / to, so moving the target moves the arrow
       if (fb) e.from = edgePoint(tb ? centre(tb) : (e.to ?? centre(fb)), fb);
-      if (tb) e.to = edgePoint(e.from ?? centre(tb), tb);
+      // An arrow that comes from the side of a chart bar ends on its side edge: from above it would run through the value label that sits over the bar
+      if (tb) {
+        const f = e.from ?? centre(tb), bar = e.toTarget && !e.toTarget.endsWith("+labels") && isChartBarTarget(e.toTarget, s.elements);
+        e.to = bar && f[0] > tb.x + tb.w ? [Math.round(tb.x + tb.w + 10), Math.round(tb.y + tb.h / 2)] : bar && f[0] < tb.x ? [Math.round(tb.x - 10), Math.round(tb.y + tb.h / 2)] : edgePoint(f, tb);
+      }
       if (!e.from || !e.to) throw new Error(`scene ${s.id}, arrow ${e.id}: needs from and to (or fromTarget/toTarget)`);
     }
   return sb;

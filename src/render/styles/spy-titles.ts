@@ -3,7 +3,7 @@
  * ground colour; shapes are paper pieces with slightly ragged cut edges, a cut gap and a small
  * paper shadow; they slide in on hard stabs. Type is heavy and re-cut letter by letter.
  */
-import { blobPts, cachedTexture, clamp01, easeOutCubic, ellipsePts, fillPoly, font, hash2, partialPath, ribbon, resample, rng, snapEase, type Pt } from "../core.js";
+import { blobPts, cachedTexture, clamp01, easeOutCubic, ellipsePts, fillPoly, font, hash2, partialPath, ribbon, resample, rng, snapEase, type Pt, ringPts } from "../core.js";
 import { bandSubtitle, layoutText, processedImage, revealText, styledIcon } from "./shared.js";
 import type { Env, StyleDef, Token } from "./types.js";
 
@@ -125,7 +125,7 @@ export const spyTitles: StyleDef = {
     const g = ground(env);
     const col = fill ? inkFor(fill, env) : g === RED ? MUSTARD : RED;
     if (variant === "circle") {
-      this.stroke(c, ellipsePts(b.x + b.w / 2, b.y + b.h / 2, b.w / 2 + 26, b.h / 2 + 22, 90), p, { seed, color: col, kind: "deco", width: 8, env });
+      this.stroke(c, ringPts(b, 26, 22, 90), p, { seed, color: col, kind: "deco", width: 8, env });
       return;
     }
     // a paper strip slid under the words. A block marker only works on a light ground (dark words, multiply);

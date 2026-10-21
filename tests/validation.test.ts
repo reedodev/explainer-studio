@@ -203,6 +203,52 @@ count++;console.log('PASS style aliases resolve and unknown styles are rejected'
   assert(Math.abs(cl.bars[0].w-320)<1e-6&&cl.bars[2].h>=cl.plotH*0.12-1e-6,'few bars are wide (80% of the slot) and the smallest bar stays visible');
   count++;console.log('PASS chart with few bars uses wide bars and keeps tiny values visible');
 }
+{
+  // circle highlight on a chart bar with labels: a rounded rectangle that never cuts labels, footnote or neighbours
+  const {ringPts}=await import('../src/render/core.js');
+  const box={x:100,y:200,w:300,h:500,rect:true};const ring=ringPts(box,30,24);
+  assert(ring.every(p=>p[0]>=box.x-4.01&&p[0]<=box.x+box.w+4.01&&p[1]>=box.y-4.01&&p[1]<=box.y+box.h+4.01),'rect ring stays within the box plus 4 px');
+  assert(Math.hypot(ring[0][0]-ring.at(-1)![0],ring[0][1]-ring.at(-1)![1])<1.5,'rect ring is closed (no open gap)');
+  assert(ringPts({x:100,y:200,w:300,h:500},30,24).some(p=>p[0]<box.x-20),'plain highlight keeps its ellipse');
+  count++;console.log('PASS chart-label ring is a closed rounded rectangle');
+  const mk=(extra:any[],hl:any)=>({fx:{camera:false,idle:false},scenes:[{id:'ch',duration:6,narration:'차트입니다.',drawOrder:['chart','src',...extra.map(e=>e.id),...(hl?['hb']:[])],elements:[
+    {id:'chart',type:'chart',chartType:'bar',unit:' dB',x:120,y:260,w:1200,h:620,data:[{label:'Engine hum',value:30,color:'blue'},{label:'Speech',value:6,color:'yellow'},{label:'Birdsong',value:1,color:'red'}],start:0,end:1},
+    {id:'src',type:'text',role:'caption',x:140,y:884,w:1200,h:50,text:'Illustrative values',fontSize:30,start:1,end:1.5},...extra,...(hl?[hl]:[])]}]}) as any;
+  const good=mk([],{id:'hb',type:'highlight',target:'chart:Engine hum+labels',style:'circle',start:1.5,end:2.5});
+  assert(!validateBoard(good).some(i=>i.rule==='highlight overlap'),'ring around bar+labels with a footnote below is clean: '+JSON.stringify(validateBoard(good).filter(i=>i.rule==='highlight overlap')));
+  const tight=mk([],{id:'hb',type:'highlight',target:'chart:Engine hum+labels',style:'circle',start:1.5,end:2.5});tight.scenes[0].elements[1].y=868;
+  assert(validateBoard(tight).some(i=>i.rule==='highlight overlap'&&/src/.test(i.id)),'a footnote touching the ring is reported with its id');
+  const ell=mk([{id:'note',type:'text',x:700,y:640,w:300,h:60,text:'Other words',fontSize:48,start:1,end:1.5}],{id:'hb',type:'highlight',target:'chart:Speech',style:'circle',start:1.5,end:2.5});
+  assert(validateBoard(ell).some(i=>i.rule==='highlight overlap'&&/note/.test(i.id)&&/check this/.test(i.detail)),'an ellipse that cuts unrelated text is reported');
+  count++;console.log('PASS highlight overlap warnings name the cut text and give a fix');
+  // the ring must not touch the category label: pixels in the label strip are identical with and without the highlight
+  const {frame:fr}=await import('../src/render/engine.js');
+  for(const st of ['whiteboard','ink-wash','blueprint']){
+    const withHl=mk([],{id:'hb',type:'highlight',target:'chart:Engine hum+labels',style:'circle',start:1.5,end:2.5}),noHl=mk([],null);
+    const a=fr(withHl,withHl.scenes[0],5,'','',{style:st}).getContext('2d').getImageData(150,822,340,44).data,b2=fr(noHl,noHl.scenes[0],5,'','',{style:st}).getContext('2d').getImageData(150,822,340,44).data;
+    let diff=0;for(let k=0;k<a.length;k+=4)if(Math.abs(a[k]-b2[k])+Math.abs(a[k+1]-b2[k+1])+Math.abs(a[k+2]-b2[k+2])>30)diff++;
+    assert.equal(diff,0,st+': the ring touches the category label ('+diff+' px differ)');
+  }
+  count++;console.log('PASS ring around a bar with labels leaves the category label untouched in whiteboard, ink-wash, blueprint');
+}
+{
+  const tb:any=base();tb.targetSeconds=10;assert(validateBoard(tb).some(i=>i.rule==='over target length'&&/20\.0 s/.test(i.detail)),'over-target warning');
+  tb.targetSeconds=19;assert(!validateBoard(tb).some(i=>i.rule==='over target length'),'within 10 % of the target is fine');
+  const none:any=base();assert(!validateBoard(none).some(i=>i.rule==='over target length'),'no targetSeconds, no warning');
+  count++;console.log('PASS targetSeconds warns when the estimated length is more than 10 % over');
+  for(const n of ['headphones','wave','plus','speaker','microphone']){assert(ICON_NAMES.includes(n));const ps=iconPaths(n);assert(ps.length>0&&ps.every(p=>p.length>=2&&p.every(q=>q[0]>=0&&q[0]<=100&&q[1]>=0&&q[1]<=100)),n+' icon stays inside its 100x100 box');}
+  count++;console.log('PASS new audio and hardware icons');
+}
+{
+  // an arrow coming from the side ends on the bar's side edge, so it never runs through the value label above the bar
+  const {resolveArrowTargets,chartLayout:cl2}=await import('../src/storyboard/schema.js');
+  const sb:any={scenes:[{id:'a',elements:[{id:'chart',type:'chart',chartType:'bar',x:120,y:260,w:1200,h:620,data:[{label:'A',value:30},{label:'B',value:6},{label:'C',value:1}]},{id:'ar',type:'arrow',from:[1420,520],toTarget:'chart:C'}]}]};
+  resolveArrowTargets(sb);const barC=cl2(sb.scenes[0].elements[0]).bars[2],end=sb.scenes[0].elements[1].to;
+  assert.deepEqual(end,[Math.round(barC.x+barC.w+10),Math.round(barC.y+barC.h/2)]);
+  const above:any={scenes:[{id:'a',elements:[{id:'chart',type:'chart',chartType:'bar',x:120,y:260,w:1200,h:620,data:[{label:'A',value:30},{label:'B',value:6},{label:'C',value:1}]},{id:'ar',type:'arrow',from:[960,300],toTarget:'chart:C'}]}]};
+  resolveArrowTargets(above);assert(above.scenes[0].elements[1].to[1]<cl2(above.scenes[0].elements[0]).bars[2].y,'an arrow from straight above still lands on the top edge');
+  count++;console.log('PASS arrows from the side end on the bar side edge, not through its value label');
+}
 console.log(count+' tests passed; 0 failed.');
 
 

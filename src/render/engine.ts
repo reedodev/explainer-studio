@@ -5,7 +5,7 @@
  */
 import path from "node:path";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import { chartLayout, elementBox, targetBox } from "../storyboard/schema.js";
+import { chartLayout, elementBox, isChartLabelTarget, targetBox } from "../storyboard/schema.js";
 import { clamp01, registerFonts, type Cnv, type Pt } from "./core.js";
 import { getStyle, resolveStyleId, type StyleDef } from "./styles/index.js";
 import { layoutText, styledIcon } from "./styles/shared.js";
@@ -97,7 +97,8 @@ function highlightBox(style: StyleDef, c: any, e: any, all: any[]) {
       }
     }
     const tb = targetBox(e.target, all);
-    if (tb) return tb;
+    // a circle around a chart bar with its labels becomes a rounded rectangle that hugs the bar, labels and nothing else
+    if (tb) return e.style === "circle" && isChartLabelTarget(e.target) ? { ...tb, rect: true } : tb;
   }
   if (e.x !== undefined && e.y !== undefined && e.w && e.h) return { x: e.x, y: e.y, w: e.w, h: e.h };
   return null;

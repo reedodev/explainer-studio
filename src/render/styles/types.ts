@@ -84,7 +84,7 @@ export interface StyleDef {
   shape(c: Ctx, s: ShapeSpec, p: number, env: Env): void;
   arrow?(c: Ctx, from: Pt, to: Pt, p: number, o: StrokeOpts): void;
   text(c: Ctx, layout: TextLayout, p: number, o: TextOpts): void;
-  highlight(c: Ctx, box: { x: number; y: number; w: number; h: number }, p: number, variant: string, fill: Token | undefined, env: Env, seed: number): void;
+  highlight(c: Ctx, box: { x: number; y: number; w: number; h: number; rect?: boolean }, p: number, variant: string, fill: Token | undefined, env: Env, seed: number): void;
   image(c: Ctx, img: any, box: { x: number; y: number; w: number; h: number }, p: number, env: Env, key: string): void;
   subtitle(c: Ctx, text: string, env: Env): void;
   /** Full-frame finishing pass (grain, scanlines, vignette...). */

@@ -156,6 +156,32 @@ export const rectPts = (x: number, y: number, w: number, h: number): Pt[] => [[x
 export function ellipsePts(cx: number, cy: number, rx: number, ry: number, n = 96, start = -Math.PI / 2, sweep = Math.PI * 2): Pt[] {
   return Array.from({ length: n + 1 }, (_, k) => [cx + rx * Math.cos(start + (sweep * k) / n), cy + ry * Math.sin(start + (sweep * k) / n)] as Pt);
 }
+/** Closed rounded rectangle, starting at the middle of the left edge and running clockwise over the top. */
+export function roundRectPts(x: number, y: number, w: number, h: number, r = 18, step = 8): Pt[] {
+  r = Math.max(1, Math.min(r, w / 2, h / 2));
+  const pts: Pt[] = [];
+  const corner = (cx: number, cy: number, a0: number) => {
+    for (let k = 0; k <= 6; k++) pts.push([cx + r * Math.cos(a0 + (k * Math.PI) / 12), cy + r * Math.sin(a0 + (k * Math.PI) / 12)] as Pt);
+  };
+  corner(x + r, y + r, Math.PI);
+  corner(x + w - r, y + r, -Math.PI / 2);
+  corner(x + w - r, y + h - r, 0);
+  corner(x + r, y + h - r, Math.PI / 2);
+  pts.push([x, y + r] as Pt);
+  return resample(pts, step);
+}
+/**
+ * Ring drawn around a highlight box. Normally an ellipse (px / py grow it beyond the box); when the box carries
+ * `rect` (a chart bar together with its labels) it is a rounded rectangle hugging the box, so it never cuts through
+ * the labels, the neighbouring bars or the footnote the way a narrowing ellipse does.
+ */
+export function ringPts(b: { x: number; y: number; w: number; h: number; rect?: boolean }, px: number, py: number, n = 96, start = -Math.PI / 2, sweep = Math.PI * 2): Pt[] {
+  if (b.rect) {
+    const pad = 4;
+    return roundRectPts(b.x - pad, b.y - pad, b.w + pad * 2, b.h + pad * 2, 18);
+  }
+  return ellipsePts(b.x + b.w / 2, b.y + b.h / 2, b.w / 2 + px, b.h / 2 + py, n, start, sweep);
+}
 export function strokePoly(c: Ctx, pts: Pt[]) {
   if (pts.length < 2) return;
   c.beginPath();

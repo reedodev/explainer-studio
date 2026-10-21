@@ -1,6 +1,6 @@
 /** whiteboard: Excalidraw-like marker drawing on a clean white board (the original look). */
 import rough from "roughjs";
-import { clamp01, easeInOutCubic, ellipsePts, font, rectPts, strokePoly, type Ctx, type Pt } from "../core.js";
+import { clamp01, easeInOutCubic, ellipsePts, font, rectPts, strokePoly, type Ctx, type Pt, ringPts } from "../core.js";
 import { PALETTE } from "../../config.js";
 import { bandSubtitle, genericCover, popImage, revealText } from "./shared.js";
 import type { Env, StyleDef, Token } from "./types.js";
@@ -117,7 +117,7 @@ export const whiteboard: StyleDef = {
       c.fillRect(b.x - 10, b.y + b.h * 0.12, (b.w + 20) * p, b.h * 0.8);
       c.restore();
     } else if (variant === "circle") {
-      this.stroke(c, ellipsePts(b.x + b.w / 2, b.y + b.h / 2, b.w / 2 + 30, b.h / 2 + 24, 105), p, { seed, color: pal.black, kind: "deco", env });
+      this.stroke(c, ringPts(b, 30, 24, 105), p, { seed, color: pal.black, kind: "deco", env });
     } else {
       this.stroke(c, [[b.x, b.y + b.h + 6], [b.x + b.w * 0.55, b.y + b.h + 10], [b.x + b.w, b.y + b.h + 4]], p, { seed, color: pal.black, kind: "underline", env });
     }

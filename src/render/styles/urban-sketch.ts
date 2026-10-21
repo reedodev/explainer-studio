@@ -3,7 +3,7 @@
  * gaps; loose transparent watercolour dropped on top, slightly off the lines, spreading in after
  * the ink; handwritten notes; watercolour bleeds as transitions.
  */
-import { blobPts, cachedTexture, clamp01, easeInOutCubic, easeOutCubic, ellipsePts, fbm, fillPoly, hexRgb, paintMottled, partialPath, rectPts, resample, rng, strokePoly, vignette, type Pt } from "../core.js";
+import { blobPts, cachedTexture, clamp01, easeInOutCubic, easeOutCubic, ellipsePts, fbm, fillPoly, hexRgb, paintMottled, partialPath, rectPts, resample, rng, strokePoly, vignette, type Pt, ringPts } from "../core.js";
 import { bandSubtitle, genericCover, processedImage, revealText } from "./shared.js";
 import type { StyleDef, Token } from "./types.js";
 
@@ -116,7 +116,7 @@ export const urbanSketch: StyleDef = {
     if (variant === "marker") {
       watercolor(c, "rect", b.x - 12, b.y + b.h * 0.15, b.w + 24, b.h * 0.85, fill ?? "yellow", p, seed);
     } else if (variant === "circle") {
-      this.stroke(c, ellipsePts(b.x + b.w / 2, b.y + b.h / 2, b.w / 2 + 30, b.h / 2 + 22, 110, -Math.PI / 2, Math.PI * 2.1), p, { seed, color: INK, kind: "deco", env });
+      this.stroke(c, ringPts(b, 30, 22, 110, -Math.PI / 2, Math.PI * 2.1), p, { seed, color: INK, kind: "deco", env });
     } else {
       this.stroke(c, [[b.x, b.y + b.h + 8], [b.x + b.w, b.y + b.h + 5]], p, { seed, color: INK, kind: "underline", env });
       this.stroke(c, [[b.x + b.w * 0.1, b.y + b.h + 16], [b.x + b.w * 0.95, b.y + b.h + 13]], clamp01(p * 1.3 - 0.3), { seed: seed + 1, color: INK, kind: "underline", width: 1.6, env });

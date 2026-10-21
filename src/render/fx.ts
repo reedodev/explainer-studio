@@ -13,9 +13,9 @@
  *   rectangle.paper          opaque paper note under a drawn rectangle (readable on photos)
  *   element.hand = false     never show the hand for this element
  */
-import { cachedTexture, clamp01, easeInOutCubic, easeOutCubic, ellipsePts, font, hexRgb, paintMottled, rectPts, type Ctx, type Pt } from "./core.js";
+import { cachedTexture, clamp01, easeInOutCubic, easeOutCubic, ellipsePts, font, hexRgb, paintMottled, rectPts, type Ctx, type Pt, ringPts } from "./core.js";
 import { iconPaths } from "./icons.js";
-import { targetBox } from "../storyboard/schema.js";
+import { isChartLabelTarget, targetBox } from "../storyboard/schema.js";
 import type { Env, TextLayout } from "./styles/types.js";
 
 export interface BoardFx {
@@ -171,7 +171,7 @@ export function tipOf(e: any, p: number, all: any[], layout: (e: any, label: boo
       const t = e.target ? targetBox(e.target, all) : null;
       const b = e.w ? e : t;
       if (!b) return null;
-      if (e.style === "circle") return along(ellipsePts(b.x + b.w / 2, b.y + b.h / 2, b.w / 2 + 30, b.h / 2 + 24, 105), p);
+      if (e.style === "circle") return along(ringPts(e.w ? b : t && isChartLabelTarget(e.target) ? { ...b, rect: true } : b, 30, 24, 105), p);
       if (e.style === "marker") return [b.x - 10 + (b.w + 20) * p, b.y + b.h * 0.55];
       return [b.x + b.w * p, b.y + b.h + 8];
     }

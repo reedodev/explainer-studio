@@ -299,7 +299,7 @@ async function main() {
   saveJson(pp.storyboard, b);
   write(out.report, `# Validation report (${style})\n\nBefore: ${count(before, "error")} errors, ${count(before, "warning")} warnings.\n\nAfter: ${count(after, "error")} errors, ${count(after, "warning")} warnings.\n\n` + JSON.stringify({ before, after }, null, 2));
   if (after.some((x) => x.level === "error")) { console.error(summary(after, `Validation failed for style ${style}; render refused.`)); throw Error(`Validation failed for style ${style}; final render refused. Full report: ${out.report}`); }
-  if (cmd === "validate") { console.log(has("--json") ? JSON.stringify(after, null, 2) : summary(after, `validate ${style}`)); return; }
+  if (cmd === "validate") { console.log(has("--json") ? JSON.stringify(after, null, 2) : summary(after, `validate ${style}: estimated ${b.scenes.reduce((m: number, s: any) => m + (s.duration || 0), 0).toFixed(1)} s` + (b.targetSeconds ? ` (target ${b.targetSeconds} s)` : ""))); return; }
 
   await loadAssets(b, pp.dir);
   const captions = makeSubtitles(shownBoard(b));

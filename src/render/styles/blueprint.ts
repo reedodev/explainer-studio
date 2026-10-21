@@ -3,7 +3,7 @@
  * drawn in drafting order (faint construction line first, then the inked line), 45° hatching
  * for fills, typed monospace annotations, and one stamp red used sparingly.
  */
-import { clamp01, easeInOutCubic, ellipsePts, font, hexRgb, paintMottled, cachedTexture, partialPath, rectPts, strokePoly, vignette, type Pt } from "../core.js";
+import { clamp01, easeInOutCubic, ellipsePts, font, hexRgb, paintMottled, cachedTexture, partialPath, rectPts, strokePoly, vignette, type Pt, ringPts } from "../core.js";
 import { roughPolylines, drawSequential } from "./whiteboard.js";
 import { bandSubtitle, genericCover, processedImage, revealText } from "./shared.js";
 import type { StyleDef } from "./types.js";
@@ -112,7 +112,7 @@ export const blueprint: StyleDef = {
   highlight(c, b, p, variant, _fill, env, seed) {
     if (variant === "circle" || variant === "marker") {
       // revision cloud / stamp circle in red
-      this.stroke(c, ellipsePts(b.x + b.w / 2, b.y + b.h / 2, b.w / 2 + 28, b.h / 2 + 22, 100), p, { seed, color: RED, kind: "deco", width: 3, env });
+      this.stroke(c, ringPts(b, 28, 22, 100), p, { seed, color: RED, kind: "deco", width: 3, env });
     } else {
       // dimension line under the text: |<------>|
       const y = b.y + b.h + 12;
