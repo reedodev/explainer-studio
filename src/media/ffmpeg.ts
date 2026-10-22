@@ -5,14 +5,26 @@ export const FFMPEG = process.env.FFMPEG_PATH || "ffmpeg";
 export const FFPROBE = process.env.FFPROBE_PATH || "ffprobe";
 export const SAMPLE_RATE = 48000;
 
+/** A spawn that never started (ENOENT) means the program is not installed or not on PATH. */
+export function friendlyError(r: { error?: Error }, tool: string): Error | null {
+  if (!r.error) return null;
+  const e = new Error(`${tool} was not found. Install FFmpeg (Windows: winget install Gyan.FFmpeg, Mac: brew install ffmpeg), reopen the terminal, check with "${tool} -version", or set FFMPEG_PATH / FFPROBE_PATH to the full path.`);
+  (e as any).friendly = true;
+  return e;
+}
+
 export function checkFfmpeg(): string {
   const r = spawnSync(FFMPEG, ["-version"], { encoding: "utf8" });
+  const fe = friendlyError(r, "ffmpeg");
+  if (fe) throw fe;
   if (r.status !== 0) throw new Error(`ffmpeg not found (${FFMPEG}). Install FFmpeg or set FFMPEG_PATH.`);
   return r.stdout.split("\n")[0];
 }
 
 export function probeDuration(file: string): number {
   const r = spawnSync(FFPROBE, ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", file], { encoding: "utf8" });
+  const fe = friendlyError(r, "ffprobe");
+  if (fe) throw fe;
   if (r.status !== 0) throw new Error(`ffprobe failed for ${file}: ${r.stderr}`);
   const d = parseFloat(r.stdout.trim());
   if (!Number.isFinite(d)) throw new Error(`ffprobe returned no duration for ${file}`);
@@ -25,6 +37,8 @@ export function probeVideo(file: string) {
     ["-v", "error", "-show_entries", "stream=codec_type,codec_name,width,height,r_frame_rate,pix_fmt:format=duration,size", "-of", "json", file],
     { encoding: "utf8" },
   );
+  const fe = friendlyError(r, "ffprobe");
+  if (fe) throw fe;
   if (r.status !== 0) throw new Error(`ffprobe failed: ${r.stderr}`);
   return JSON.parse(r.stdout);
 }
@@ -34,6 +48,8 @@ export function decodeToPcm(file: string): Int16Array {
   const r = spawnSync(FFMPEG, ["-v", "error", "-i", file, "-ac", "1", "-ar", String(SAMPLE_RATE), "-f", "s16le", "-"], {
     maxBuffer: 1024 * 1024 * 512,
   });
+  const fe = friendlyError(r, "ffmpeg");
+  if (fe) throw fe;
   if (r.status !== 0) throw new Error(`ffmpeg decode failed for ${file}: ${r.stderr?.toString()}`);
   const buf = r.stdout as Buffer;
   return new Int16Array(buf.buffer, buf.byteOffset, Math.floor(buf.length / 2));

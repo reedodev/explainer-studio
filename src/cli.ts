@@ -366,7 +366,9 @@ async function main() {
   else console.log(summary(after, `${style} done: ${result.duration.toFixed(1)} s video in ${result.elapsedSec.toFixed(0)} s -> ${out.final}`));
 }
 main().catch((e) => {
-  console.error(e);
+  if (e && e.friendly) console.error(`Error: ${e.message}`);
+  else if (e && e.code === "ENOENT" && String(e.path).endsWith("storyboard.json")) console.error(`Error: no project found (missing ${e.path}). Pass the folder of an example (e.g. examples/fiber-optics) or create one with: npm run es -- init "topic" --slug name`);
+  else console.error(e);
   process.exitCode = 1;
 });
 

@@ -7,11 +7,125 @@
 <img src="https://img.shields.io/badge/license-MIT-black" alt="MIT">
 </p>
 
+**English** | [한국어](README.ko.md)
+
 # Explainer Studio
 
 **One line in, a narrated explainer video out, in eight hand-drawn styles.**
 
 Give your coding agent a topic like *"How does a fiber-optic cable carry light?"*. It writes a storyboard, and this engine draws it stroke by stroke as a whiteboard sketch, a blueprint, an ink-wash painting, a 60s spy title sequence and more, with voice-over and captions, straight to MP4. The demo above is one storyboard file rendered eight times (silent, with burned-in captions). Every number in it is sourced: see `examples/fiber-optics/research/sources.json`. A full single-style render is in [`docs/fiber-optics-blueprint.mp4`](docs/fiber-optics-blueprint.mp4), and a narrated Korean example (narrated in the author's own voice, made with a local voice model; any local TTS can be plugged in with `--tts cmd`) is in [`docs/ai-agent-vs-chatbot-ko-voice.mp4`](docs/ai-agent-vs-chatbot-ko-voice.mp4).
+
+## New here? Start with this
+
+### What it solves, and when to use it
+
+You have a topic ("How does a fiber-optic cable carry light?") and you want a short explainer video with narration and captions, but you do not want to learn a video editor, rent a GPU or pay for a video-generation API. You give the topic to your coding agent. It writes a storyboard file, and this engine draws it frame by frame into an MP4 with an `.srt` caption file.
+
+Use it for: a 45 to 60 second concept explainer, a lesson clip, a side-by-side comparison of two ideas. Do not use it for screen recordings, 3D scenes or characters that walk around (see [Limitations](#limitations)).
+
+### Words you will see
+
+| Word | Meaning |
+|---|---|
+| Claude Code | Anthropic's command-line program for giving an AI tasks. This skill runs inside it. |
+| Skill | A folder of instructions that tells the AI how to do one kind of job. Once installed, you can ask for it in plain words. |
+| Terminal | The text window where you type commands: PowerShell on Windows, the Terminal app on Mac. |
+| Node.js | The program that runs this project's code. `npm` comes with it. |
+| FFmpeg | A free tool that joins pictures and sound into an MP4. This project needs it. |
+| Storyboard | The `storyboard.json` file: what appears on screen, where, when, and what the voice says in each scene. |
+| TTS | Text-to-speech, the voice. `--tts silent` skips the voice so you can try everything without any voice setup. |
+| SRT | A plain-text caption file. Every render writes one next to the video. |
+
+### Check your setup
+
+Type these in the terminal. Each should print a version number.
+
+```bash
+node -v
+npm -v
+ffmpeg -version
+```
+
+- `node -v` must show `v20` or higher (this guide was checked with v26.5.0, and the project's CI uses Node 22). Install: Windows `winget install OpenJS.NodeJS.LTS`, Mac `brew install node`. Reopen the terminal afterwards.
+- `ffmpeg -version` must print a version line. Install: Windows `winget install Gyan.FFmpeg`, Mac `brew install ffmpeg`. Reopen the terminal afterwards. If it is installed but not on your PATH, set `FFMPEG_PATH` and `FFPROBE_PATH` to the full paths of the two programs.
+- You need Claude Code only for the "ask in plain words" route. Install it from the [official guide](https://code.claude.com/docs/en/overview). The commands below work without it.
+
+### Three steps
+
+**1. Install.** Inside Claude Code:
+
+```
+/plugin marketplace add reedodev/explainer-studio
+/plugin install explainer-studio@explainer-studio
+```
+
+To run the commands yourself instead, download the repository and install its packages once (about 15 seconds to download and 4 seconds to install on the machine used for this guide):
+
+```bash
+git clone https://github.com/reedodev/explainer-studio
+cd explainer-studio
+npm ci
+```
+
+**2. Ask your agent.** Copy these into Claude Code one at a time:
+
+1. `Make an explainer video about how vaccines train the immune system with explainer-studio, blueprint style, no voice for now.`
+2. `Render the same storyboard again in ink-wash style so I can compare the two.`
+3. `Tell me where final.mp4 and subtitles.srt are, and fix any warnings in validation-report.md.`
+
+Or run the bundled example yourself:
+
+```bash
+npm run es -- build examples/fiber-optics --tts silent --style blueprint
+```
+
+**3. Look at the result.** Open `examples/fiber-optics/variants/blueprint/final.mp4`. Also look at `contact-sheet.png` in the same folder (one frame per scene) and `validation-report.md` (what the checks found).
+
+### What the run really prints
+
+This is the output of the command above on a fresh clone (Windows, Node v26.5.0, FFmpeg 8.0.1; the first lines and the long overlap list are shortened, and the path is replaced by `...`). It took 43 seconds and exited with code 0:
+
+```
+Note: --tts silent writes no voice. Scene lengths are estimated from the text.
+scene-01 6.738 silent
+scene-02 7.123 silent
+...
+scene-07 7.892 silent
+rendered blueprint scene-01 202
+...
+rendered blueprint scene-07 1600
+contact sheet (one frame at 70% per scene): ...\examples\fiber-optics\variants\blueprint\contact-sheet.png
+blueprint done: 53.3 s video in 42 s -> ...\examples\fiber-optics\variants\blueprint\final.mp4
+0 error(s), 1 warning(s), 14 intended overlap(s) not listed as warnings
+  text fit checked in all 8 styles
+  warn  scene-04: sparse scene (elements cover 33% of the safe area (aim for 35%+): ...)
+```
+
+How to read it: one `scene-NN` line per scene with its length in seconds. Then one `rendered` line per scene (the number is the frame count). The last lines are the check result. **Errors stop the render; warnings do not.** The warning above only says scene 4 is a bit empty. The video is 1920x1080, 30 fps, H.264 video with AAC audio, 53.3 seconds long (checked with ffprobe). The caption file `subtitles.srt` is written to the project folder, `examples/fiber-optics/`.
+
+Two things that surprise people: the build writes the measured scene lengths back into `examples/fiber-optics/storyboard.json`, so `git status` shows that file as modified (this is normal), and the other render commands below only work after a `build` has done that once.
+
+More commands from the same folder (times on the same machine):
+
+```bash
+npm run es -- render examples/fiber-optics --style ink-wash        # about 30 s -> variants/ink-wash/final.mp4
+npm run es -- styleframes examples/fiber-optics --styles all       # about 7 s  -> styleframes/contact-sheet.png
+npm run es -- build examples/ai-agent-vs-chatbot-ko --tts silent   # about 12 s -> examples/ai-agent-vs-chatbot-ko/final.mp4
+```
+
+### When it gets stuck
+
+Every row below was reproduced on a fresh clone.
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| `Error: ffmpeg was not found. Install FFmpeg (...)` and exit code 1 | FFmpeg is not installed or not on PATH | Install it (see above), reopen the terminal, check `ffmpeg -version`, or set `FFMPEG_PATH` / `FFPROBE_PATH` |
+| `Error: no project found (missing ...\output\nope\storyboard.json)` | The folder name or path after `build` / `render` is wrong | Use an existing folder such as `examples/fiber-optics`, or create one with `npm run es -- init "Why do cats purr?" --slug cats` |
+| `Validation failed for style ink-wash; render refused.` followed by many `ERROR scene-01 / title: invalid animation window` lines | `render` was run before any `build` or `tts`, so the storyboard has no measured scene lengths yet (also happens after `git checkout` restores the example's `storyboard.json`) | Run `npm run es -- build <folder> --tts silent` first, then `render` |
+| `git status` shows `examples/fiber-optics/storyboard.json` modified | `build` writes the measured scene lengths into it | Expected. Keep it; restoring it with `git checkout` means running `build` again before `render` |
+| `warn  scene-04: sparse scene (...)` | The scene covers less than 35% of the safe area | Not an error. Add or enlarge shapes if you want to remove it; the video is still rendered |
+
+---
 
 ## Quick start
 
@@ -88,24 +202,6 @@ Voices: `edge` (Microsoft Edge neural voices via an unofficial endpoint: check t
 
 ## 한국어
 
-**한 줄 주제를 넣으면 내레이션과 자막이 들어간 설명 영상이 8가지 손그림 스타일로 나옵니다.**
-
-에이전트가 주제를 받아 장면표(`storyboard.json`)를 쓰면, 이 엔진이 그 장면표를 화이트보드, 설계도, 수묵화, 첩보영화 오프닝 같은 스타일로 한 획씩 그려 MP4로 만듭니다. 맨 위 데모는 장면표 파일 하나를 8번 렌더한 결과이고, 두 번째 데모(`examples/sky-blue`)는 배치 레시피만 보고 새로 쓴 장면표입니다.
-
-- **GPU, 영상 생성 모델, 유료 API가 필요 없습니다.** CPU로 그린 프레임을 FFmpeg로 묶기 때문에 같은 입력이면 같은 영상이 나옵니다.
-- **글자는 실제 글자로 들어갑니다.** 제목, 이름표, 자막이 깨지거나 철자가 틀리지 않습니다.
-- **멈춰 있지 않습니다.** 장면이 시작되면 제목과 첫 그림이 함께 그려지고, 그다음에는 화면이 천천히 다가가며 아이콘·화살표·강조 표시가 살짝 움직입니다.
-- **렌더 전에 검사합니다.** 화면 밖 요소, 자막 자리 침범, 작은 글자, 글자 넘침, 10초 넘게 멈춘 화면을 찾아 고치고, 남은 오류가 있으면 렌더하지 않습니다.
-- **한국어와 영어 자막을 모두 지원합니다.** 음성은 `edge`(비공식 엔드포인트이므로 수익 목적 공개 전 이용 조건 확인), `sapi`(Windows), `cmd`(내 컴퓨터의 TTS 명령), `silent` 중에서 고릅니다.
-
-```bash
-npm ci
-npm run es -- build examples/fiber-optics --tts silent --style blueprint
-npm run es -- styleframes examples/fiber-optics --styles all
-```
-
-준비물, 장면표 쓰는 법, 스타일 고르는 법, "이렇게 말하면 이렇게 바뀝니다" 표는 [SKILL.md](skills/explainer-studio/SKILL.md)에 있습니다. 공개하기 전에는 완성 영상을 처음부터 끝까지 직접 보고 듣습니다. 검사 통과는 시청 확인을 대신하지 못합니다.
-
-만든 사람: **Reedo** · [YouTube @Reedodev](https://www.youtube.com/@Reedodev) · [GitHub @reedodev](https://github.com/reedodev)
+한국어 안내는 [README.ko.md](README.ko.md)에 있습니다. 처음 쓰시는 분을 위한 설명, 준비 확인, 따라 하기, 막힐 때 표를 한국어로 모두 적어 두었습니다.
 
 MIT License. Third-party fonts and libraries keep their own licences.
